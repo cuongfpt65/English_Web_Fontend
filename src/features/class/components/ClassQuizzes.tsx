@@ -23,32 +23,15 @@ const ClassQuizzes: React.FC<ClassQuizzesProps> = ({ classId }) => {
     const [viewingResults, setViewingResults] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false); useEffect(() => {
         fetchQuizzes(classId);
-    }, [classId, fetchQuizzes]);    const handleCreateQuiz = async (quizData: any) => {
+    }, [classId, fetchQuizzes]);
+
+    const handleCreateQuiz = async (quizData: any) => {
         try {
-            // Format data to match backend API expectations
-            const formattedData = {
-                title: quizData.title,
-                description: quizData.description,
-                timeLimit: quizData.timeLimit,
-                dueDate: quizData.dueDate ? new Date(quizData.dueDate).toISOString() : null,
-                questions: quizData.questions.map((q: any) => ({
-                    vocabularyId: q.vocabularyId,
-                    questionType: q.questionType,
-                    questionText: q.questionText,
-                    correctAnswer: q.correctAnswer,
-                    options: q.options || null,
-                    order: q.order
-                }))
-            };
-            
-            console.log('Creating quiz with data:', formattedData);
-            await api.post(`/ClassQuiz/${classId}`, formattedData);
+            await api.post(`/ClassQuiz/${classId}`, quizData);
             await fetchQuizzes(classId);
             setShowCreateModal(false);
-        } catch (error: any) {
+        } catch (error) {
             console.error('Failed to create quiz:', error);
-            console.error('Error response:', error.response?.data);
-            alert(`Failed to create quiz: ${error.response?.data?.message || error.message}`);
             throw error;
         }
     };
@@ -155,16 +138,14 @@ const ClassQuizzes: React.FC<ClassQuizzesProps> = ({ classId }) => {
 
                                 {quiz.description && (
                                     <p className="text-sm text-gray-600 mb-4">{quiz.description}</p>
-                                )}
-
-                                <div className="flex items-center text-sm text-gray-500 mb-4">
+                                )}                                <div className="flex items-center text-sm text-gray-500 mb-4">
                                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <span>{quiz.timeLimit} minutes</span>
                                     <span className="mx-2">•</span>
-                                    <span>{quiz.questions.length} questions</span>
-                                </div>                                <div className="flex items-center justify-between">
+                                    <span>{quiz.questionCount || quiz.questions?.length || 0} questions</span>
+                                </div><div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <span className="text-xs text-gray-400">
                                             by {quiz.createdByName}

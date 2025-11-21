@@ -4,6 +4,7 @@ export interface ClassRoom {
     id: string;
     name: string;
     description?: string;
+    code: string;
     teacherId: string;
     teacherName: string;
     createdAt: string;
@@ -40,7 +41,11 @@ export interface ClassQuiz {
     createdAt: string;
     createdBy: string;
     createdByName: string;
-    questions: ClassQuizQuestion[];
+    questions?: ClassQuizQuestion[];
+    questionCount?: number; // From API list endpoint
+    attemptCount?: number;
+    myAttempt?: any;
+    myBestScore?: number;
 }
 
 export interface ClassQuizQuestion {
@@ -119,7 +124,7 @@ export const classService = {
 
     // Get class ranking
     async getClassRanking(classId: string): Promise<ClassRanking[]> {
-        const response = await api.get(`/Class/${classId}/ranking`);
+        const response = await api.get(`/Class/${classId}/results`);
         return response.data;
     },
 

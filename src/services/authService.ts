@@ -22,7 +22,7 @@ export interface PhoneLoginRequest {
 
 export interface SendVerificationCodeRequest {
     phoneNumber: string;
-    purpose?: string;
+    type?: string;
 }
 
 export interface AuthResponse {
@@ -49,15 +49,19 @@ export const authService = {
     async register(request: RegisterRequest): Promise<AuthResponse> {
         const response = await api.post('/auth/register', request);
         return response.data;
-    },
-
-    async sendVerificationCode(request: SendVerificationCodeRequest): Promise<VerificationCodeResponse> {
-        const response = await api.post('/Auth/send-verification-code', request);
+    }, async sendVerificationCode(request: SendVerificationCodeRequest): Promise<VerificationCodeResponse> {
+        const response = await api.post('/auth/send-code', request);
         return response.data;
     },
 
     async verifyPhoneLogin(request: PhoneLoginRequest): Promise<AuthResponse> {
-        const response = await api.post('/auth/verify-phone-login', request);
+        // Backend endpoint là /auth/phone-auth
+        const response = await api.post('/auth/phone-auth', {
+            phoneNumber: request.phoneNumber,
+            code: request.code,
+            name: request.name,
+            email: request.email
+        });
         return response.data;
     },
 

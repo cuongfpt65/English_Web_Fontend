@@ -4,7 +4,6 @@ import { useClassStore } from '../../store/classStore';
 import ClassChat from './components/ClassChat';
 import ClassMembers from './components/ClassMembers';
 import ClassQuizzes from './components/ClassQuizzes';
-import ClassRanking from './components/ClassRanking';
 
 const ClassDetailPage: React.FC = () => {
     const { classId } = useParams<{ classId: string }>();
@@ -63,7 +62,7 @@ const ClassDetailPage: React.FC = () => {
     const tabs = [
         { id: 'chat' as const, name: 'Chat', icon: '💬' },
         { id: 'quizzes' as const, name: 'Quizzes', icon: '📝' },
-        { id: 'ranking' as const, name: 'Ranking', icon: '🏆' },
+
         { id: 'members' as const, name: 'Members', icon: '👥' },
     ];
 
@@ -126,9 +125,7 @@ const ClassDetailPage: React.FC = () => {
                 {selectedTab === 'quizzes' && (
                     <ClassQuizzes classId={classId!} />
                 )}
-                {selectedTab === 'ranking' && (
-                    <ClassRanking classId={classId!} />
-                )}
+
                 {selectedTab === 'members' && (
                     <ClassMembers classId={classId!} />
                 )}

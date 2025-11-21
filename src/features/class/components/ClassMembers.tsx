@@ -52,21 +52,20 @@ const ClassMembers: React.FC<ClassMembersProps> = ({ classId }) => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {classMembers.map((member) => (
-                            <div
+                        {classMembers.map((member) => (                            <div
                                 key={member.id}
                                 className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
                             >
                                 {/* Avatar */}
                                 <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-white ${member.role === 'Teacher' ? 'bg-purple-500' : 'bg-blue-500'
                                     }`}>
-                                    {member.fullName.charAt(0).toUpperCase()}
+                                    {member.fullName?.charAt(0).toUpperCase() || member.userName?.charAt(0).toUpperCase() || '?'}
                                 </div>
 
                                 {/* User Info */}
                                 <div className="ml-4 flex-1">
                                     <div className="flex items-center">
-                                        <h4 className="font-semibold text-gray-900">{member.fullName}</h4>
+                                        <h4 className="font-semibold text-gray-900">{member.fullName || member.userName || 'Unknown'}</h4>
                                         <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${member.role === 'Teacher'
                                                 ? 'bg-purple-100 text-purple-800'
                                                 : 'bg-blue-100 text-blue-800'
@@ -94,13 +93,11 @@ const ClassMembers: React.FC<ClassMembersProps> = ({ classId }) => {
                                         </div>
                                         <div className="text-xs text-gray-500">Best Quiz</div>
                                     </div>
-                                </div>
-
-                                {/* Actions */}
+                                </div>                                {/* Actions */}
                                 {member.role === 'Student' && (
                                     <div className="flex items-center space-x-2">
                                         <button
-                                            onClick={() => handleRemoveMember(member.userId, member.fullName)}
+                                            onClick={() => handleRemoveMember(member.userId, member.fullName || member.userName || 'Unknown')}
                                             className="text-red-600 hover:text-red-800 text-sm"
                                             title="Remove from class"
                                         >
@@ -114,9 +111,7 @@ const ClassMembers: React.FC<ClassMembersProps> = ({ classId }) => {
                         ))}
                     </div>
                 )}
-            </div>
-
-            {/* Invite Code Section */}
+            </div>            {/* Invite Code Section */}
             {currentClass && (
                 <div className="px-6 pb-6">
                     <div className="bg-gray-50 rounded-lg p-4">
@@ -126,14 +121,17 @@ const ClassMembers: React.FC<ClassMembersProps> = ({ classId }) => {
                         </p>
                         <div className="flex items-center space-x-2">
                             <code className="px-3 py-2 bg-white border border-gray-300 rounded-md font-mono text-lg tracking-wider">
-                                {currentClass.id.substring(0, 8).toUpperCase()}
+                                {currentClass.code?.toUpperCase() || 'N/A'}
                             </code>
                             <button
                                 onClick={() => {
-                                    navigator.clipboard.writeText(currentClass.id.substring(0, 8).toUpperCase());
-                                    alert('Invite code copied to clipboard!');
+                                    if (currentClass.code) {
+                                        navigator.clipboard.writeText(currentClass.code.toUpperCase());
+                                        alert('Invite code copied to clipboard!');
+                                    }
                                 }}
                                 className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                                disabled={!currentClass.code}
                             >
                                 Copy
                             </button>

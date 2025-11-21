@@ -15,9 +15,8 @@ interface AuthState {
     token: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (emailOrPhone: string, password: string) => Promise<void>;
-    loginWithPhone: (phoneNumber: string, code: string, createAccount?: boolean, name?: string, email?: string) => Promise<void>;
-    sendVerificationCode: (phoneNumber: string, purpose?: string) => Promise<string>;
+    login: (emailOrPhone: string, password: string) => Promise<void>; loginWithPhone: (phoneNumber: string, code: string, createAccount?: boolean, name?: string, email?: string) => Promise<void>;
+    sendVerificationCode: (phoneNumber: string, type?: string) => Promise<string>;
     register: (email: string, password: string, name: string, phoneNumber?: string) => Promise<void>;
     logout: () => void;
     setLoading: (loading: boolean) => void;
@@ -57,11 +56,9 @@ export const useAuthStore = create<AuthState>()(
                     set({ isLoading: false });
                     throw new Error(error.response?.data?.message || error.message || 'Đăng nhập thất bại');
                 }
-            },
-
-            sendVerificationCode: async (phoneNumber: string, purpose: string = 'Login') => {
+            }, sendVerificationCode: async (phoneNumber: string, type: string = 'Login') => {
                 try {
-                    const data = await authService.sendVerificationCode({ phoneNumber, purpose });
+                    const data = await authService.sendVerificationCode({ phoneNumber, type });
                     return data.code; // For demo purposes only!
                 } catch (error: any) {
                     throw new Error(error.response?.data?.message || error.message || 'Gửi mã xác nhận thất bại');
