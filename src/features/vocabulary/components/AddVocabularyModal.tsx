@@ -21,7 +21,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({
         imageUrl: '',
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const { addVocabulary, isLoading, topics, levels } = useVocabularyStore();
+    const { addVocabulary, isLoading } = useVocabularyStore();
 
     const predefinedTopics = [
         'Greetings', 'Family', 'Food', 'Travel', 'Work', 'Education',

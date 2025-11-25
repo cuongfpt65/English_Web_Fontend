@@ -12,7 +12,7 @@ interface VocabularyStats {
 
 const VocabularyStatsPanel: React.FC = () => {
     const [stats, setStats] = useState<VocabularyStats | null>(null);
-    const { vocabularies, userVocabularies, fetchVocabularies, fetchUserVocabularies } = useVocabularyStore();
+    const { vocabularies, userVocabularies } = useVocabularyStore();
 
     useEffect(() => {
         calculateStats();

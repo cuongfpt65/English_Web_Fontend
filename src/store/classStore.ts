@@ -78,19 +78,21 @@ export const useClassStore = create<ClassState>((set, get) => ({
                 isLoading: false
             });
         }
-    },
-
-    createClass: async (classData: { name: string; description?: string }) => {
+    }, createClass: async (classData: { name: string; description?: string }) => {
         set({ isLoading: true, error: null });
         try {
             await classService.createClass(classData);
             await get().fetchMyClasses();
             set({ isLoading: false });
         } catch (error: any) {
+            const errorMessage = error.response?.status === 403
+                ? 'Only teachers can create classes. Please contact administrator to upgrade your account.'
+                : error.response?.data?.message || error.message || 'Failed to create class';
             set({
-                error: error.response?.data?.message || error.message || 'Failed to create class',
+                error: errorMessage,
                 isLoading: false
             });
+            throw error;
         }
     },
 

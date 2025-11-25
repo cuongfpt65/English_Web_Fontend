@@ -34,14 +34,14 @@ interface Vocabulary {
     level: string;
 }
 
-const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose, onSubmit, classId }) => {
+const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose, onSubmit }) => {
     const [step, setStep] = useState<'info' | 'questions'>('info');
     const [isLoading, setIsLoading] = useState(false);
     const [vocabularies, setVocabularies] = useState<Vocabulary[]>([]);
     const [selectedVocabs, setSelectedVocabs] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterTopic, setFilterTopic] = useState<string>('');
-    const [filterLevel, setFilterLevel] = useState<string>('');
+    const [filterTopic] = useState<string>('');
+    const [filterLevel] = useState<string>('');
 
     const [quizData, setQuizData] = useState<QuizData>({
         title: '',
@@ -280,8 +280,8 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose, onSu
                                             key={vocab.id}
                                             onClick={() => handleVocabToggle(vocab.id)}
                                             className={`p-3 border rounded-md cursor-pointer transition-colors ${selectedVocabs.includes(vocab.id)
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-300 hover:border-gray-400'
+                                                ? 'border-blue-500 bg-blue-50'
+                                                : 'border-gray-300 hover:border-gray-400'
                                                 }`}
                                         >
                                             <div className="flex items-start justify-between">
@@ -333,8 +333,8 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose, onSu
                                                 <div
                                                     key={optIndex}
                                                     className={`p-2 rounded text-sm ${option === question.correctAnswer
-                                                            ? 'bg-green-50 border border-green-300 text-green-800'
-                                                            : 'bg-gray-50 border border-gray-200'
+                                                        ? 'bg-green-50 border border-green-300 text-green-800'
+                                                        : 'bg-gray-50 border border-gray-200'
                                                         }`}
                                                 >
                                                     {option}

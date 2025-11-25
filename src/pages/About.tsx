@@ -2,15 +2,14 @@ import React from 'react';
 
 const About: React.FC = () => {
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                    About English Learning App
-                </h1>
-                <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                    We're passionate about making English learning accessible, effective, and enjoyable for everyone.
-                </p>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">            <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                About FPT Learnify AI
+            </h1>
+            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+                We're passionate about making English learning accessible, effective, and enjoyable for everyone through AI-powered technology.
+            </p>
+        </div>
 
             <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <div className="bg-white p-6 rounded-lg shadow-sm border">

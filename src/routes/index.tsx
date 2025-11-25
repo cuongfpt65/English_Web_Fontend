@@ -1,10 +1,16 @@
 import React from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import AdminDashboard from '../features/admin/AdminDashboard';
+import AdminStatistics from '../features/admin/AdminStatistics';
+import RequestTeacherPage from '../features/admin/RequestTeacherPage';
+import TeacherApprovals from '../features/admin/TeacherApprovals';
+import UsersManagement from '../features/admin/UsersManagement';
 import AuthPage from '../features/auth/AuthPage';
 import ChatPage from '../features/chatbot/ChatPage';
 import ClassDetailPage from '../features/class/ClassDetailPage';
 import ClassPage from '../features/class/ClassPage';
 import VocabularyPage from '../features/vocabulary/VocabularyPage';
+import AdminLayout from '../layouts/AdminLayout';
 import MainLayout from '../layouts/MainLayout';
 import About from '../pages/About';
 import Home from '../pages/Home';
@@ -17,6 +23,20 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
     return isAuthenticated ? <>{children}</> : <Navigate to="/auth" replace />;
+};
+
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { isAuthenticated, user } = useAuthStore();
+
+    if (!isAuthenticated) {
+        return <Navigate to="/auth" replace />;
+    }
+
+    if (user?.role !== 'Admin') {
+        return <Navigate to="/" replace />;
+    }
+
+    return <>{children}</>;
 };
 
 // Component để ngăn người dùng đã đăng nhập truy cập trang auth
@@ -85,14 +105,36 @@ const AppRoutes: React.FC = () => {
                                 <PracticePage />
                             </ProtectedRoute>
                         }
-                    /><Route
+                    />                    <Route
                         path="progress"
                         element={
                             <ProtectedRoute>
                                 <ProgressPage />
                             </ProtectedRoute>
                         }
+                    />                    <Route
+                        path="request-teacher"
+                        element={
+                            <ProtectedRoute>
+                                <RequestTeacherPage />
+                            </ProtectedRoute>
+                        }
                     />
+                </Route>
+
+                {/* Admin Routes - Separate Layout */}
+                <Route
+                    path="/admin"
+                    element={
+                        <AdminRoute>
+                            <AdminLayout />
+                        </AdminRoute>
+                    }
+                >
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="users" element={<UsersManagement />} />
+                    <Route path="approvals" element={<TeacherApprovals />} />
+                    <Route path="statistics" element={<AdminStatistics />} />
                 </Route>
             </Routes>
         </Router>

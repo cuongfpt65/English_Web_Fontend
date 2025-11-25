@@ -18,7 +18,7 @@ const AuthPage: React.FC = () => {
         name: '',
         phoneNumber: '',
     });
-    const [error, setError] = React.useState('');    const handleEmailPasswordSubmit = async (e: React.FormEvent) => {
+    const [error, setError] = React.useState(''); const handleEmailPasswordSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
@@ -38,7 +38,7 @@ const AuthPage: React.FC = () => {
             ...formData,
             [e.target.name]: e.target.value,
         });
-    };    const resetForm = () => {
+    }; const resetForm = () => {
         setFormData({
             email: '',
             password: '',
@@ -140,7 +140,7 @@ const AuthPage: React.FC = () => {
                                     value={formData.phoneNumber}
                                     onChange={handleChange}
                                 />
-                            </div>                        )}
+                            </div>)}
                     </form>
 
                     {/* Error Message */}

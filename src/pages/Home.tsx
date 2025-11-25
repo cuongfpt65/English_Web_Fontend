@@ -7,21 +7,19 @@ const Home: React.FC = () => {
             {/* Hero Section */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-400 via-pink-400 to-rose-500 p-12 mb-8 shadow-2xl">
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 h-32 w-32 rounded-full bg-white/10 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
-
-                <div className="relative text-center text-white">
+                <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>                <div className="relative text-center text-white">
                     <div className="mb-6 flex justify-center gap-3">
-                        <span className="text-6xl animate-bounce">📚</span>
-                        <span className="text-6xl animate-bounce delay-100">✨</span>
-                        <span className="text-6xl animate-bounce delay-200">🌟</span>
+                        <span className="text-6xl animate-bounce">🎓</span>
+                        <span className="text-6xl animate-bounce delay-100">🤖</span>
+                        <span className="text-6xl animate-bounce delay-200">✨</span>
                     </div>
                     <h1 className="text-5xl md:text-6xl font-bold mb-4">
-                        Learn English
-                        <span className="block mt-2 text-yellow-200">with Joy! 🎉</span>
+                        FPT Learnify AI
+                        <span className="block mt-2 text-yellow-200">Learn English with AI! 🚀</span>
                     </h1>
                     <p className="mt-6 max-w-2xl mx-auto text-xl text-white/90">
-                        Master English through fun interactive lessons, games, and AI-powered practice.
-                        Let's make learning an adventure! 🚀
+                        Master English through AI-powered interactive lessons, smart practice, and personalized learning.
+                        Experience the future of language learning! 🌟
                     </p>
                     <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/vocabulary">

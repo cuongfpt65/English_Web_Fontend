@@ -31,6 +31,7 @@ export interface AuthResponse {
         email: string;
         phoneNumber?: string;
         name: string;
+        role?: string;
     };
     token: string;
 }

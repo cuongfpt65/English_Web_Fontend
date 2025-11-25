@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useAuthStore } from '../../store';
 import { useClassStore } from '../../store/classStore';
 import ClassCard from './components/ClassCard';
 import CreateClassModal from './components/CreateClassModal';
@@ -7,6 +8,7 @@ import JoinClassModal from './components/JoinClassModal';
 const ClassPage: React.FC = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showJoinModal, setShowJoinModal] = useState(false);
+    const { user } = useAuthStore();
 
     const {
         classes,
@@ -36,8 +38,7 @@ const ClassPage: React.FC = () => {
                                     Practice English with friends! 🎯
                                 </p>
                             </div>
-                        </div>
-                        <div className="mt-4 sm:mt-0 flex flex-wrap gap-3">
+                        </div>                        <div className="mt-4 sm:mt-0 flex flex-wrap gap-3">
                             <button
                                 onClick={() => setShowJoinModal(true)}
                                 className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 border-2 border-transparent rounded-xl font-bold text-white hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform"
@@ -47,15 +48,17 @@ const ClassPage: React.FC = () => {
                                 </svg>
                                 Join Class
                             </button>
-                            <button
-                                onClick={() => setShowCreateModal(true)}
-                                className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-orange-500 to-pink-600 border-2 border-transparent rounded-xl font-bold text-white hover:from-orange-600 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform"
-                            >
-                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Create Class
-                            </button>
+                            {user?.role === 'Teacher' && (
+                                <button
+                                    onClick={() => setShowCreateModal(true)}
+                                    className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-orange-500 to-pink-600 border-2 border-transparent rounded-xl font-bold text-white hover:from-orange-600 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform"
+                                >
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Create Class
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>                {/* Error Message */}
@@ -108,15 +111,18 @@ const ClassPage: React.FC = () => {
                                 <h3 className="text-lg font-medium text-gray-500 mb-2">No classes yet</h3>
                                 <p className="text-gray-400 mb-6">
                                     Create a new class or join an existing one to start learning with others.
-                                </p>
-                                <div className="flex justify-center space-x-4">
-                                    <button
-                                        onClick={() => setShowCreateModal(true)}
-                                        className="text-blue-600 hover:text-blue-800 font-medium"
-                                    >
-                                        Create your first class
-                                    </button>
-                                    <span className="text-gray-400">or</span>
+                                </p>                                <div className="flex justify-center space-x-4">
+                                    {user?.role === 'Teacher' && (
+                                        <>
+                                            <button
+                                                onClick={() => setShowCreateModal(true)}
+                                                className="text-blue-600 hover:text-blue-800 font-medium"
+                                            >
+                                                Create your first class
+                                            </button>
+                                            <span className="text-gray-400">or</span>
+                                        </>
+                                    )}
                                     <button
                                         onClick={() => setShowJoinModal(true)}
                                         className="text-green-600 hover:text-green-800 font-medium"

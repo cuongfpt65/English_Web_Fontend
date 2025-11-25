@@ -5,17 +5,27 @@ import { useAuthStore } from '../store';
 const MainLayout: React.FC = () => {
     const { user, logout, isAuthenticated } = useAuthStore();
     const location = useLocation();
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); const getNavigationItems = () => {
+        const items = [
+            { path: '/', label: 'Home', icon: '🏠' },
+            { path: '/chat', label: 'AI Chat', icon: '💬' },
+            { path: '/lessons', label: 'Lessons', icon: '📚' },
+            { path: '/vocabulary', label: 'Vocabulary', icon: '📖' },
+            { path: '/my-vocabulary', label: 'My Vocabulary', icon: '📚' },
+            { path: '/class', label: 'Classes', icon: '👥' },
+            { path: '/practice', label: 'Practice', icon: '✏️' },
+            { path: '/progress', label: 'Progress', icon: '📊' },
+        ];
 
-    const navigationItems = [
-        { path: '/', label: 'Home', icon: '🏠' },
-        { path: '/chat', label: 'AI Chat', icon: '💬' },
-        { path: '/lessons', label: 'Lessons', icon: '📚' },
-        { path: '/vocabulary', label: 'Vocabulary', icon: '📖' },
-        { path: '/class', label: 'Classes', icon: '👥' },
-        { path: '/practice', label: 'Practice', icon: '✏️' },
-        { path: '/progress', label: 'Progress', icon: '📊' },
-    ];
+        // Add teacher request link if user is student
+        if (user?.role === 'Student') {
+            items.push({ path: '/request-teacher', label: 'Become Teacher', icon: '👨‍🏫' });
+        }
+
+        return items;
+    };
+
+    const navigationItems = getNavigationItems();
 
     const isActivePath = (path: string) => {
         if (path === '/') {
@@ -33,20 +43,19 @@ const MainLayout: React.FC = () => {
             >
                 {/* Logo Section */}
                 <div className="p-6 border-b border-pink-100">
-                    <div className="flex items-center justify-between">
-                        {!isSidebarCollapsed && (
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                                    <span className="text-2xl">🌟</span>
-                                </div>
-                                <div>
-                                    <h1 className="text-lg font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
-                                        English
-                                    </h1>
-                                    <p className="text-xs text-gray-500">Learning App</p>
-                                </div>
+                    <div className="flex items-center justify-between">                        {!isSidebarCollapsed && (
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                                <span className="text-2xl">🎓</span>
                             </div>
-                        )}
+                            <div>
+                                <h1 className="text-lg font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
+                                    FPT Learnify AI
+                                </h1>
+                                <p className="text-xs text-gray-500">AI Learning Platform</p>
+                            </div>
+                        </div>
+                    )}
                         <button
                             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                             className="p-2 rounded-lg hover:bg-pink-50 transition-colors"
@@ -78,8 +87,8 @@ const MainLayout: React.FC = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
-                                        ? 'bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-lg shadow-pink-300/50'
-                                        : 'text-gray-600 hover:bg-gradient-to-r hover:from-orange-100 hover:to-pink-100'
+                                    ? 'bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-lg shadow-pink-300/50'
+                                    : 'text-gray-600 hover:bg-gradient-to-r hover:from-orange-100 hover:to-pink-100'
                                     }`}
                             >
                                 <span className="text-2xl">{item.icon}</span>
@@ -89,9 +98,7 @@ const MainLayout: React.FC = () => {
                             </Link>
                         );
                     })}
-                </nav>
-
-                {/* User Section */}
+                </nav>                {/* User Section */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-pink-100">
                     {isAuthenticated ? (
                         <div className="space-y-3">
@@ -107,6 +114,17 @@ const MainLayout: React.FC = () => {
                                         <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                                     </div>
                                 </div>
+                            )}
+                            {user?.role === 'Admin' && (
+                                <Link to="/admin">
+                                    <button
+                                        className={`w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg ${isSidebarCollapsed ? 'px-3' : ''
+                                            }`}
+                                    >
+                                        <span className="text-lg">👑</span>
+                                        {!isSidebarCollapsed && <span className="font-medium">Admin Panel</span>}
+                                    </button>
+                                </Link>
                             )}
                             <button
                                 onClick={logout}
@@ -144,24 +162,23 @@ const MainLayout: React.FC = () => {
 
                 {/* Footer */}
                 <footer className="bg-white/80 backdrop-blur-sm border-t border-pink-100">
-                    <div className="max-w-7xl mx-auto px-6 py-6">
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-600">
-                                © 2025 English Learning App. Made with{' '}
-                                <span className="text-pink-500">❤️</span> for students
-                            </p>
-                            <div className="flex items-center gap-4">
-                                <a href="#" className="text-gray-500 hover:text-pink-500 transition-colors">
-                                    About
-                                </a>
-                                <a href="#" className="text-gray-500 hover:text-pink-500 transition-colors">
-                                    Help
-                                </a>
-                                <a href="#" className="text-gray-500 hover:text-pink-500 transition-colors">
-                                    Contact
-                                </a>
-                            </div>
+                    <div className="max-w-7xl mx-auto px-6 py-6">                        <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600">
+                            © 2025 FPT Learnify AI. Made with{' '}
+                            <span className="text-pink-500">❤️</span> for students
+                        </p>
+                        <div className="flex items-center gap-4">
+                            <a href="#" className="text-gray-500 hover:text-pink-500 transition-colors">
+                                About
+                            </a>
+                            <a href="#" className="text-gray-500 hover:text-pink-500 transition-colors">
+                                Help
+                            </a>
+                            <a href="#" className="text-gray-500 hover:text-pink-500 transition-colors">
+                                Contact
+                            </a>
                         </div>
+                    </div>
                     </div>
                 </footer>
             </div>

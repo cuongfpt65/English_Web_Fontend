@@ -32,9 +32,9 @@ interface QuizTakingViewProps {
 const QuizTakingView: React.FC<QuizTakingViewProps> = ({
     quiz,
     questions,
-    attemptId,
+
     onSubmit,
-    onCancel,
+
 }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -176,14 +176,14 @@ const QuizTakingView: React.FC<QuizTakingViewProps> = ({
                                             key={index}
                                             onClick={() => handleAnswerChange(currentQuestion.id, option)}
                                             className={`w-full text-left p-4 rounded-lg border-2 transition-all ${isSelected
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                ? 'border-blue-500 bg-blue-50'
+                                                : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                         >
                                             <div className="flex items-center">
                                                 <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${isSelected
-                                                        ? 'border-blue-500 bg-blue-500'
-                                                        : 'border-gray-300'
+                                                    ? 'border-blue-500 bg-blue-500'
+                                                    : 'border-gray-300'
                                                     }`}>
                                                     {isSelected && (
                                                         <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -258,10 +258,10 @@ const QuizTakingView: React.FC<QuizTakingViewProps> = ({
                                     key={q.id}
                                     onClick={() => handleQuestionNavigate(index)}
                                     className={`aspect-square rounded-md text-sm font-medium transition-colors ${isCurrent
-                                            ? 'bg-blue-600 text-white'
-                                            : isAnswered
-                                                ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        ? 'bg-blue-600 text-white'
+                                        : isAnswered
+                                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                         }`}
                                 >
                                     {index + 1}
