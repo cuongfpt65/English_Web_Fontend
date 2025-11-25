@@ -11,7 +11,7 @@ const MainLayout: React.FC = () => {
             { path: '/chat', label: 'AI Chat', icon: '💬' },
             { path: '/lessons', label: 'Lessons', icon: '📚' },
             { path: '/vocabulary', label: 'Vocabulary', icon: '📖' },
-            { path: '/vocabulary', label: 'My Vocabulary', icon: '📚' },
+
             { path: '/class', label: 'Classes', icon: '👥' },
             { path: '/practice', label: 'Practice', icon: '✏️' },
             { path: '/progress', label: 'Progress', icon: '📊' },
