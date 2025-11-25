@@ -45,30 +45,28 @@ const VocabularyCard: React.FC<VocabularyCardProps> = ({ vocabulary, isLearned, 
         ];
         const hash = topic.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
         return colors[hash % colors.length];
-    };
-
-    return (
+    };    return (
         <>
-            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+            <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:scale-105 transform">
                 {/* Card Header */}
-                <div className="p-4 border-b border-gray-100">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                <div className="p-3 lg:p-4 border-b border-gray-100">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-lg lg:text-xl font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent mb-2 truncate">
                                 {vocabulary.word}
                             </h3>
-                            <div className="flex items-center space-x-2 mb-2">
-                                <span className={`px-2 py-1 text-xs font-medium rounded-md border ${getLevelColor(vocabulary.level)}`}>
+                            <div className="flex items-center flex-wrap gap-2 mb-2">
+                                <span className={`px-2 py-1 text-xs font-bold rounded-full border ${getLevelColor(vocabulary.level)}`}>
                                     {vocabulary.level}
                                 </span>
-                                <span className={`px-2 py-1 text-xs font-medium rounded-md border ${getTopicColor(vocabulary.topic)}`}>
+                                <span className={`px-2 py-1 text-xs font-bold rounded-full border ${getTopicColor(vocabulary.topic)} truncate max-w-[100px]`}>
                                     {vocabulary.topic}
                                 </span>
                             </div>
                         </div>
                         {isLearned && (
                             <div className="flex-shrink-0">
-                                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center shadow-md">
                                     <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                     </svg>
@@ -76,32 +74,30 @@ const VocabularyCard: React.FC<VocabularyCardProps> = ({ vocabulary, isLearned, 
                             </div>
                         )}
                     </div>
-                </div>
-
-                {/* Card Content */}
-                <div className="p-4">
+                </div>                {/* Card Content */}
+                <div className="p-3 lg:p-4">
                     {/* Meaning Section */}
-                    <div className="mb-4">
+                    <div className="mb-3 lg:mb-4">
                         <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-sm font-medium text-gray-700">Meaning</h4>
+                            <h4 className="text-xs lg:text-sm font-bold text-gray-700">Meaning</h4>
                             <button
                                 onClick={() => setShowMeaning(!showMeaning)}
-                                className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                                className="text-blue-600 hover:text-blue-800 text-xs lg:text-sm font-bold transition-colors px-2 py-1 rounded-lg hover:bg-blue-50"
                             >
                                 {showMeaning ? 'Hide' : 'Show'}
                             </button>
                         </div>
                         {showMeaning && (
-                            <p className="text-gray-900 bg-gray-50 p-3 rounded-md">
+                            <p className="text-gray-900 bg-gradient-to-r from-gray-50 to-gray-100 p-2 lg:p-3 rounded-lg border border-gray-200 text-sm">
                                 {vocabulary.meaning}
                             </p>
                         )}
                     </div>
 
                     {/* Example Section */}
-                    <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Example</h4>
-                        <p className="text-gray-600 italic text-sm bg-blue-50 p-3 rounded-md border-l-4 border-blue-400">
+                    <div className="mb-3 lg:mb-4">
+                        <h4 className="text-xs lg:text-sm font-bold text-gray-700 mb-2">Example</h4>
+                        <p className="text-gray-600 italic text-xs lg:text-sm bg-gradient-to-r from-blue-50 to-blue-100 p-2 lg:p-3 rounded-lg border-l-4 border-blue-400">
                             "{vocabulary.example}"
                         </p>
                     </div>

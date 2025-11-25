@@ -90,32 +90,32 @@ const LessonsPage: React.FC = () => {
 
     const getUserNote = (vocabularyId: string) => {
         return userVocabularies.find(uv => uv.vocabularyId === vocabularyId)?.note || '';
-    }; return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                        <span className="text-3xl">📚</span>
+    };    return (
+        <div className="max-w-6xl mx-auto px-4 py-4 lg:py-8">
+            <div className="mb-6 lg:mb-8">
+                <div className="flex items-center gap-2 lg:gap-3 mb-4 lg:mb-6">
+                    <div className="w-10 lg:w-14 h-10 lg:h-14 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg">
+                        <span className="text-2xl lg:text-3xl">📚</span>
                     </div>
                     <div>
-                        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
+                        <h1 className="text-2xl lg:text-4xl font-extrabold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
                             Vocabulary Lessons
                         </h1>
-                        <p className="text-gray-600 font-medium">Build your English vocabulary! ✨</p>
+                        <p className="text-sm lg:text-base text-gray-600 font-medium">Build your English vocabulary! ✨</p>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="flex flex-wrap gap-4 mb-6">
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">🎯 Topic</label>
+                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 mb-4 lg:mb-6">
+                    <div className="flex-1 sm:flex-initial">
+                        <label className="block text-xs lg:text-sm font-bold text-gray-700 mb-2">🎯 Topic</label>
                         <select
                             value={selectedTopic}
                             onChange={(e) => {
                                 setSelectedTopic(e.target.value);
                                 setCurrentPage(1);
                             }}
-                            className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all bg-white font-medium"
+                            className="w-full px-3 lg:px-4 py-2 lg:py-2.5 border-2 border-gray-200 rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all bg-white font-medium text-sm lg:text-base"
                         >
                             <option value="">All Topics</option>
                             {topics.map(topic => (
@@ -124,15 +124,15 @@ const LessonsPage: React.FC = () => {
                         </select>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">📊 Level</label>
+                    <div className="flex-1 sm:flex-initial">
+                        <label className="block text-xs lg:text-sm font-bold text-gray-700 mb-2">📊 Level</label>
                         <select
                             value={selectedLevel}
                             onChange={(e) => {
                                 setSelectedLevel(e.target.value);
                                 setCurrentPage(1);
                             }}
-                            className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all bg-white font-medium"
+                            className="w-full px-3 lg:px-4 py-2 lg:py-2.5 border-2 border-gray-200 rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all bg-white font-medium text-sm lg:text-base"
                         >
                             <option value="">All Levels</option>
                             {levels.map(level => (
@@ -143,10 +143,10 @@ const LessonsPage: React.FC = () => {
                 </div>
             </div>            {/* Vocabulary Cards */}
             {isLoading ? (
-                <div className="text-center py-12">
+                <div className="text-center py-8 lg:py-12">
                     <div className="inline-block">
-                        <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
-                        <p className="mt-4 text-lg font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
+                        <div className="w-12 lg:w-16 h-12 lg:h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+                        <p className="mt-3 lg:mt-4 text-base lg:text-lg font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
                             Loading vocabulary...
                         </p>
                     </div>

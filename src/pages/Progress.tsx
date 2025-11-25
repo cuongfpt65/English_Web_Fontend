@@ -102,53 +102,58 @@ const ProgressPage: React.FC = () => {
                 </div>
             </div>
         );
-    }
-
-    return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    Your Learning Progress
-                </h1>
-                <p className="text-gray-600">
-                    Welcome back, {user?.name}! Here's your learning journey so far.
-                </p>
+    }    return (
+        <div className="max-w-6xl mx-auto px-4 py-4 lg:py-8">
+            <div className="mb-6 lg:mb-8">
+                <div className="flex items-center gap-2 lg:gap-3 mb-4">
+                    <div className="w-10 lg:w-14 h-10 lg:h-14 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg">
+                        <span className="text-2xl lg:text-3xl">📊</span>
+                    </div>
+                    <div>
+                        <h1 className="text-2xl lg:text-3xl font-extrabold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
+                            Your Learning Progress
+                        </h1>
+                        <p className="text-sm lg:text-base text-gray-600 font-medium">
+                            Welcome back, {user?.name}! Here's your learning journey so far. ✨
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* Progress Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-medium text-gray-600">Vocabulary Progress</h3>
-                        <span className="text-2xl">📚</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
+                <div className="bg-white p-4 lg:p-6 rounded-xl lg:rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+                    <div className="flex items-center justify-between mb-2 lg:mb-3">
+                        <h3 className="text-xs lg:text-sm font-bold text-gray-600">Vocabulary Progress</h3>
+                        <span className="text-xl lg:text-2xl">📚</span>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-1">
+                    <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent mb-1 lg:mb-2">
                         {progressData.learnedWords}/{progressData.totalWords}
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                         <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-gradient-to-r from-orange-400 to-pink-500 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${progressPercentage}%` }}
                         />
                     </div>
-                    <p className="text-sm text-gray-500">{progressPercentage}% complete</p>
+                    <p className="text-xs lg:text-sm text-gray-500 font-medium">{progressPercentage}% complete</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-medium text-gray-600">Chat Sessions</h3>
-                        <span className="text-2xl">💬</span>
+                <div className="bg-white p-4 lg:p-6 rounded-xl lg:rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+                    <div className="flex items-center justify-between mb-2 lg:mb-3">
+                        <h3 className="text-xs lg:text-sm font-bold text-gray-600">Chat Sessions</h3>
+                        <span className="text-xl lg:text-2xl">💬</span>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-1">
+                    <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent mb-1 lg:mb-2">
                         {progressData.chatSessions}
                     </div>
-                    <p className="text-sm text-gray-500">Total conversations</p>
+                    <p className="text-xs lg:text-sm text-gray-500 font-medium">Total conversations</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-medium text-gray-600">Messages Sent</h3>
-                        <span className="text-2xl">📝</span>
+                <div className="bg-white p-4 lg:p-6 rounded-xl lg:rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+                    <div className="flex items-center justify-between mb-2 lg:mb-3">
+                        <h3 className="text-xs lg:text-sm font-bold text-gray-600">Messages Sent</h3>
+                        <span className="text-xl lg:text-2xl">📝</span>
                     </div>
                     <div className="text-2xl font-bold text-gray-900 mb-1">
                         {progressData.totalMessages}

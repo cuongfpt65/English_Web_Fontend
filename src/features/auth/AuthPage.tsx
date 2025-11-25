@@ -51,48 +51,45 @@ const AuthPage: React.FC = () => {
     const toggleLoginRegister = () => {
         setIsLogin(!isLogin);
         resetForm();
-    };
-
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-pink-50 to-peach-50 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    }; return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-pink-50 to-peach-50 py-6 lg:py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Decorative Background Elements */}
-            <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-orange-300/30 to-pink-300/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-pink-300/30 to-peach-300/30 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+            <div className="absolute top-0 left-0 w-48 lg:w-72 h-48 lg:h-72 bg-gradient-to-br from-orange-300/30 to-pink-300/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-0 w-64 lg:w-96 h-64 lg:h-96 bg-gradient-to-br from-pink-300/30 to-peach-300/30 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
-            <div className="max-w-md w-full space-y-8 relative z-10">
+            <div className="max-w-md w-full space-y-6 lg:space-y-8 relative z-10">
                 {/* Header */}
                 <div className="text-center">
-                    <div className="mx-auto mb-6 inline-block">
-                        <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-pink-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-pink-300/50 transform hover:scale-110 transition-transform">
-                            <span className="text-5xl">✨</span>
+                    <div className="mx-auto mb-4 lg:mb-6 inline-block">
+                        <div className="w-16 lg:w-20 h-16 lg:h-20 bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-2xl shadow-pink-300/50 transform hover:scale-110 transition-transform">
+                            <span className="text-3xl lg:text-5xl">✨</span>
                         </div>
-                    </div>                    <h2 className="text-4xl font-extrabold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent mb-3">
+                    </div>
+                    <h2 className="text-2xl lg:text-4xl font-extrabold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent mb-2 lg:mb-3">
                         Welcome Back! 🎉
                     </h2>
-                    <p className="text-base text-gray-600 font-medium">
+                    <p className="text-sm lg:text-base text-gray-600 font-medium">
                         {isLogin ? '✉️ Đăng nhập với email' : '✉️ Đăng ký ngay'}
                     </p>
                 </div>
 
-                {/* Forms */}
-                <div className="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-sm border border-white/50">
-                    <form onSubmit={handleEmailPasswordSubmit} className="space-y-5">
-                        {!isLogin && (
-                            <div>
-                                <label htmlFor="name" className="block text-sm font-bold text-gray-700 mb-2">
-                                    👤 Họ và tên
-                                </label>
-                                <input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    required={!isLogin}
-                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                                    placeholder="Nhập họ và tên của bạn"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                />
-                            </div>
+                {/* Forms */}                <div className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl p-6 lg:p-8 backdrop-blur-sm border border-white/50">
+                    <form onSubmit={handleEmailPasswordSubmit} className="space-y-4 lg:space-y-5">
+                        {!isLogin && (<div>
+                            <label htmlFor="name" className="block text-xs lg:text-sm font-bold text-gray-700 mb-2">
+                                👤 Họ và tên
+                            </label>
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                required={!isLogin}
+                                className="w-full px-3 lg:px-4 py-2.5 lg:py-3 border-2 border-gray-200 rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all text-sm lg:text-base"
+                                placeholder="Nhập họ và tên của bạn"
+                                value={formData.name}
+                                onChange={handleChange}
+                            />
+                        </div>
                         )}
                         <div>
                             <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
