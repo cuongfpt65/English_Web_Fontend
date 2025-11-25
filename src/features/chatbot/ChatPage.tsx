@@ -51,7 +51,7 @@ const ChatPage: React.FC = () => {
         setMessages((prev) => [...prev, userMessage]);
 
         try {
-            const response = await fetch('https://localhost:5019/api/ChatBot', {
+            const response = await fetch('https://apisoctrang.azurewebsites.net/api/ChatBot', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -158,8 +158,8 @@ const ChatPage: React.FC = () => {
                                 >
                                     <div
                                         className={`max-w-xs lg:max-w-md px-5 py-3 rounded-2xl shadow-md ${message.sender === 'User'
-                                                ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white'
-                                                : 'bg-white border-2 border-orange-200'
+                                            ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white'
+                                            : 'bg-white border-2 border-orange-200'
                                             }`}
                                     >
                                         <div className="text-sm leading-relaxed">
@@ -211,8 +211,8 @@ const ChatPage: React.FC = () => {
                                     key={type.value}
                                     onClick={() => setSelectedType(type.value)}
                                     className={`p-3 rounded-xl border-2 transition-all text-left ${selectedType === type.value
-                                            ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white border-pink-600 shadow-lg'
-                                            : 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-md'
+                                        ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white border-pink-600 shadow-lg'
+                                        : 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-md'
                                         }`}
                                 >
                                     <div className="flex items-center gap-2">
