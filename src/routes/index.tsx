@@ -3,9 +3,10 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-d
 import AdminDashboard from '../features/admin/AdminDashboard';
 import AdminStatistics from '../features/admin/AdminStatistics';
 import RequestTeacherPage from '../features/admin/RequestTeacherPage';
-import TeacherApprovals from '../features/admin/TeacherApprovals';
+import TeacherApprovalNew from '../features/admin/TeacherApprovalNew';
 import UsersManagement from '../features/admin/UsersManagement';
 import AuthPage from '../features/auth/AuthPage';
+import ForgotPasswordPage from '../features/auth/ForgotPasswordPage';
 import ChatPage from '../features/chatbot/ChatPage';
 import ClassDetailPage from '../features/class/ClassDetailPage';
 import ClassPage from '../features/class/ClassPage';
@@ -55,6 +56,14 @@ const AppRoutes: React.FC = () => {
                     element={
                         <PublicRoute>
                             <AuthPage />
+                        </PublicRoute>
+                    }
+                />
+                <Route
+                    path="/forgot-password"
+                    element={
+                        <PublicRoute>
+                            <ForgotPasswordPage />
                         </PublicRoute>
                     }
                 />
@@ -133,7 +142,7 @@ const AppRoutes: React.FC = () => {
                 >
                     <Route index element={<AdminDashboard />} />
                     <Route path="users" element={<UsersManagement />} />
-                    <Route path="approvals" element={<TeacherApprovals />} />
+                    <Route path="approvals" element={<TeacherApprovalNew />} />
                     <Route path="statistics" element={<AdminStatistics />} />
                 </Route>
             </Routes>

@@ -8,7 +8,9 @@ export interface LoginRequest {
 export interface RegisterRequest {
     email: string;
     password: string;
+    confirmPassword: string;
     name: string;
+    role: string;
     phoneNumber?: string;
 }
 
@@ -32,12 +34,33 @@ export interface AuthResponse {
         phoneNumber?: string;
         name: string;
         role?: string;
+        status?: string;
     };
     token: string;
 }
 
 export interface VerificationCodeResponse {
     code: string;
+    message: string;
+}
+
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface VerifyResetCodeRequest {
+    email: string;
+    code: string;
+}
+
+export interface ResetPasswordRequest {
+    email: string;
+    code: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export interface MessageResponse {
     message: string;
 }
 
@@ -77,6 +100,21 @@ export const authService = {
 
     async getUserProfile(): Promise<any> {
         const response = await api.get('/auth/profile');
+        return response.data;
+    },
+
+    async forgotPassword(request: ForgotPasswordRequest): Promise<MessageResponse> {
+        const response = await api.post('/auth/forgot-password', request);
+        return response.data;
+    },
+
+    async verifyResetCode(request: VerifyResetCodeRequest): Promise<{ valid: boolean; message: string }> {
+        const response = await api.post('/auth/verify-reset-code', request);
+        return response.data;
+    },
+
+    async resetPassword(request: ResetPasswordRequest): Promise<MessageResponse> {
+        const response = await api.post('/auth/reset-password', request);
         return response.data;
     },
 };

@@ -45,7 +45,7 @@ const VocabularyCard: React.FC<VocabularyCardProps> = ({ vocabulary, isLearned, 
         ];
         const hash = topic.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
         return colors[hash % colors.length];
-    };    return (
+    }; return (
         <>
             <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:scale-105 transform">
                 {/* Card Header */}

@@ -167,79 +167,169 @@
 }
 
 /* Additional responsive utilities */
-.mobile-text-xs { font-size: 0.75rem; }
-.mobile-text-sm { font-size: 0.875rem; }
-.mobile-text-base { font-size: 1rem; }
-.mobile-text-lg { font-size: 1.125rem; }
+.mobile-text-xs {
+    font-size: 0.75rem;
+}
 
-.mobile-p-2 { padding: 0.5rem; }
-.mobile-p-3 { padding: 0.75rem; }
-.mobile-p-4 { padding: 1rem; }
+.mobile-text-sm {
+    font-size: 0.875rem;
+}
 
-.mobile-m-2 { margin: 0.5rem; }
-.mobile-m-3 { margin: 0.75rem; }
-.mobile-m-4 { margin: 1rem; }
+.mobile-text-base {
+    font-size: 1rem;
+}
 
-.mobile-gap-2 { gap: 0.5rem; }
-.mobile-gap-3 { gap: 0.75rem; }
-.mobile-gap-4 { gap: 1rem; }
+.mobile-text-lg {
+    font-size: 1.125rem;
+}
+
+.mobile-p-2 {
+    padding: 0.5rem;
+}
+
+.mobile-p-3 {
+    padding: 0.75rem;
+}
+
+.mobile-p-4 {
+    padding: 1rem;
+}
+
+.mobile-m-2 {
+    margin: 0.5rem;
+}
+
+.mobile-m-3 {
+    margin: 0.75rem;
+}
+
+.mobile-m-4 {
+    margin: 1rem;
+}
+
+.mobile-gap-2 {
+    gap: 0.5rem;
+}
+
+.mobile-gap-3 {
+    gap: 0.75rem;
+}
+
+.mobile-gap-4 {
+    gap: 1rem;
+}
 
 /* Mobile-first responsive classes */
 @media (max-width: 640px) {
-  .mobile-hidden { display: none !important; }
-  .mobile-block { display: block !important; }
-  .mobile-flex { display: flex !important; }
-  .mobile-grid { display: grid !important; }
-  
-  .mobile-w-full { width: 100% !important; }
-  .mobile-h-full { height: 100% !important; }
-  
-  .mobile-overflow-hidden { overflow: hidden !important; }
-  .mobile-overflow-scroll { overflow: scroll !important; }
-  
-  .mobile-rounded-lg { border-radius: 0.5rem !important; }
-  .mobile-rounded-xl { border-radius: 0.75rem !important; }
-  
-  .mobile-shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; }
-  .mobile-shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important; }
-  .mobile-shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important; }
+    .mobile-hidden {
+        display: none !important;
+    }
+
+    .mobile-block {
+        display: block !important;
+    }
+
+    .mobile-flex {
+        display: flex !important;
+    }
+
+    .mobile-grid {
+        display: grid !important;
+    }
+
+    .mobile-w-full {
+        width: 100% !important;
+    }
+
+    .mobile-h-full {
+        height: 100% !important;
+    }
+
+    .mobile-overflow-hidden {
+        overflow: hidden !important;
+    }
+
+    .mobile-overflow-scroll {
+        overflow: scroll !important;
+    }
+
+    .mobile-rounded-lg {
+        border-radius: 0.5rem !important;
+    }
+
+    .mobile-rounded-xl {
+        border-radius: 0.75rem !important;
+    }
+
+    .mobile-shadow-sm {
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+    }
+
+    .mobile-shadow-md {
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+    }
+
+    .mobile-shadow-lg {
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+    }
 }
 
 /* Tablet specific */
 @media (min-width: 641px) and (max-width: 1023px) {
-  .tablet-hidden { display: none !important; }
-  .tablet-block { display: block !important; }
-  .tablet-flex { display: flex !important; }
+    .tablet-hidden {
+        display: none !important;
+    }
+
+    .tablet-block {
+        display: block !important;
+    }
+
+    .tablet-flex {
+        display: flex !important;
+    }
 }
 
 /* Desktop specific */
 @media (min-width: 1024px) {
-  .desktop-hidden { display: none !important; }
-  .desktop-block { display: block !important; }
-  .desktop-flex { display: flex !important; }
+    .desktop-hidden {
+        display: none !important;
+    }
+
+    .desktop-block {
+        display: block !important;
+    }
+
+    .desktop-flex {
+        display: flex !important;
+    }
 }
 
 /* Touch-friendly improvements */
 @media (pointer: coarse) {
-  /* Increase touch targets for touch devices */
-  button, .btn, a[role="button"], input[type="checkbox"], input[type="radio"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Improve hover states for touch devices */
-  .hover\:scale-105:hover {
-    transform: scale(1.02);
-  }
+
+    /* Increase touch targets for touch devices */
+    button,
+    .btn,
+    a[role="button"],
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Improve hover states for touch devices */
+    .hover\:scale-105:hover {
+        transform: scale(1.02);
+    }
 }
 
 /* Landscape phone specific */
 @media screen and (max-height: 500px) and (orientation: landscape) {
-  .landscape-mobile-compact {
-    padding: 0.25rem !important;
-  }
-  
-  .landscape-mobile-text-sm {
-    font-size: 0.875rem !important;
-  }
+    .landscape-mobile-compact {
+        padding: 0.25rem !important;
+    }
+
+    .landscape-mobile-text-sm {
+        font-size: 0.875rem !important;
+    }
 }

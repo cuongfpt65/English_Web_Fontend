@@ -9,6 +9,7 @@ interface User {
     name: string;
     fullName?: string;
     role?: string;
+    status?: string;
 }
 
 interface AuthState {
@@ -18,7 +19,7 @@ interface AuthState {
     isLoading: boolean;
     login: (emailOrPhone: string, password: string) => Promise<void>; loginWithPhone: (phoneNumber: string, code: string, createAccount?: boolean, name?: string, email?: string) => Promise<void>;
     sendVerificationCode: (phoneNumber: string, type?: string) => Promise<string>;
-    register: (email: string, password: string, name: string, phoneNumber?: string) => Promise<void>;
+    register: (email: string, password: string, confirmPassword: string, name: string, role: string, phoneNumber?: string) => Promise<void>;
     logout: () => void;
     setLoading: (loading: boolean) => void;
 }
@@ -85,12 +86,17 @@ export const useAuthStore = create<AuthState>()(
                     set({ isLoading: false });
                     throw new Error(error.response?.data?.message || error.message || 'Đăng nhập bằng điện thoại thất bại');
                 }
-            },
-
-            register: async (email: string, password: string, name: string, phoneNumber?: string) => {
+            }, register: async (email: string, password: string, confirmPassword: string, name: string, role: string, phoneNumber?: string) => {
                 set({ isLoading: true });
                 try {
-                    const data = await authService.register({ email, password, name, phoneNumber });
+                    const data = await authService.register({ email, password, confirmPassword, name, role, phoneNumber });
+
+                    // If user is teacher and status is pending, show message instead of logging in
+                    if (data.user.role === 'Teacher' && data.user.status === 'Pending') {
+                        set({ isLoading: false });
+                        throw new Error('Đăng ký thành công! Tài khoản giáo viên của bạn đang chờ phê duyệt từ quản trị viên.');
+                    }
+
                     set({
                         user: data.user,
                         token: data.token,

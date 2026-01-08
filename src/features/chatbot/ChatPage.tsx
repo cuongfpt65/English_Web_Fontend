@@ -105,7 +105,7 @@ const ChatPage: React.FC = () => {
                     {line.trim()}
                 </p>
             ));
-    };    return (
+    }; return (
         <div className="flex h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-peach-50">
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full">
@@ -147,31 +147,31 @@ const ChatPage: React.FC = () => {
                         </div>
                     ) : (
                         <>                            {messages.map((message) => (
+                            <div
+                                key={message.id}
+                                className={`flex ${message.sender === 'User' ? 'justify-end' : 'justify-start'
+                                    }`}
+                            >
                                 <div
-                                    key={message.id}
-                                    className={`flex ${message.sender === 'User' ? 'justify-end' : 'justify-start'
+                                    className={`max-w-[85%] sm:max-w-xs lg:max-w-md px-3 lg:px-5 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl shadow-md ${message.sender === 'User'
+                                        ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white'
+                                        : 'bg-white border-2 border-orange-200'
                                         }`}
                                 >
-                                    <div
-                                        className={`max-w-[85%] sm:max-w-xs lg:max-w-md px-3 lg:px-5 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl shadow-md ${message.sender === 'User'
-                                            ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white'
-                                            : 'bg-white border-2 border-orange-200'
+                                    <div className="text-xs lg:text-sm leading-relaxed">
+                                        {message.sender === 'Bot'
+                                            ? formatBotMessage(message.message)
+                                            : message.message}
+                                    </div>
+                                    <p
+                                        className={`text-xs mt-1.5 lg:mt-2 ${message.sender === 'User' ? 'text-orange-100' : 'text-gray-500'
                                             }`}
                                     >
-                                        <div className="text-xs lg:text-sm leading-relaxed">
-                                            {message.sender === 'Bot'
-                                                ? formatBotMessage(message.message)
-                                                : message.message}
-                                        </div>
-                                        <p
-                                            className={`text-xs mt-1.5 lg:mt-2 ${message.sender === 'User' ? 'text-orange-100' : 'text-gray-500'
-                                                }`}
-                                        >
-                                            {new Date(message.createdAt).toLocaleTimeString()}
-                                        </p>
-                                    </div>
+                                        {new Date(message.createdAt).toLocaleTimeString()}
+                                    </p>
                                 </div>
-                            ))}
+                            </div>
+                        ))}
                         </>
                     )}                    {loading && (
                         <div className="flex justify-start">
@@ -199,32 +199,32 @@ const ChatPage: React.FC = () => {
                             🤖 Choose AI Assistant Type
                         </label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {chatBotTypes.map((type) => (                                <button
-                                    key={type.value}
-                                    onClick={() => setSelectedType(type.value)}
-                                    className={`p-2 lg:p-3 rounded-lg lg:rounded-xl border-2 transition-all text-left ${selectedType === type.value
-                                        ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white border-pink-600 shadow-lg'
-                                        : 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-md'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-1.5 lg:gap-2">
-                                        <span className="text-base lg:text-xl flex-shrink-0">{type.emoji}</span>
-                                        <div className="flex-1 min-w-0">
-                                            <p
-                                                className={`text-xs font-bold truncate ${selectedType === type.value ? 'text-white' : 'text-gray-900'
-                                                    }`}
-                                            >
-                                                {type.label}
-                                            </p>
-                                            <p
-                                                className={`text-xs truncate ${selectedType === type.value ? 'text-orange-100' : 'text-gray-500'
-                                                    }`}
-                                            >
-                                                {type.description}
-                                            </p>
-                                        </div>
+                            {chatBotTypes.map((type) => (<button
+                                key={type.value}
+                                onClick={() => setSelectedType(type.value)}
+                                className={`p-2 lg:p-3 rounded-lg lg:rounded-xl border-2 transition-all text-left ${selectedType === type.value
+                                    ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white border-pink-600 shadow-lg'
+                                    : 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-md'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-1.5 lg:gap-2">
+                                    <span className="text-base lg:text-xl flex-shrink-0">{type.emoji}</span>
+                                    <div className="flex-1 min-w-0">
+                                        <p
+                                            className={`text-xs font-bold truncate ${selectedType === type.value ? 'text-white' : 'text-gray-900'
+                                                }`}
+                                        >
+                                            {type.label}
+                                        </p>
+                                        <p
+                                            className={`text-xs truncate ${selectedType === type.value ? 'text-orange-100' : 'text-gray-500'
+                                                }`}
+                                        >
+                                            {type.description}
+                                        </p>
                                     </div>
-                                </button>
+                                </div>
+                            </button>
                             ))}
                         </div>
                     </div>

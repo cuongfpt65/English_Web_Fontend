@@ -10,30 +10,48 @@ const AuthPage: React.FC = () => {
     // Thiết lập navigation function cho store
     React.useEffect(() => {
         setNavigate(navigate);
-    }, [navigate]);
-
-    const [formData, setFormData] = React.useState({
+    }, [navigate]); const [formData, setFormData] = React.useState({
         email: '',
         password: '',
+        confirmPassword: '',
         name: '',
         phoneNumber: '',
+        role: 'Student',
     });
     const [error, setError] = React.useState(''); const handleEmailPasswordSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-
-        try {
+        setError(''); try {
             if (isLogin) {
                 await login(formData.email, formData.password);
             } else {
-                await register(formData.email, formData.password, formData.name, formData.phoneNumber);
+                // Client-side password validation
+                if (formData.password !== formData.confirmPassword) {
+                    setError('Mật khẩu xác nhận không khớp');
+                    return;
+                }
+
+                // Password strength validation
+                if (formData.password.length < 8) {
+                    setError('Mật khẩu phải có ít nhất 8 ký tự');
+                    return;
+                }
+
+                const hasUpper = /[A-Z]/.test(formData.password);
+                const hasLower = /[a-z]/.test(formData.password);
+                const hasNumber = /\d/.test(formData.password);
+                const hasSpecial = /[@$!%*?&]/.test(formData.password);
+
+                if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+                    setError('Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt (@$!%*?&)');
+                    return;
+                }
+
+                await register(formData.email, formData.password, formData.confirmPassword, formData.name, formData.role, formData.phoneNumber);
             }
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Đã xảy ra lỗi');
         }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    }; const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -42,8 +60,10 @@ const AuthPage: React.FC = () => {
         setFormData({
             email: '',
             password: '',
+            confirmPassword: '',
             name: '',
             phoneNumber: '',
+            role: 'Student',
         });
         setError('');
     };
@@ -51,7 +71,25 @@ const AuthPage: React.FC = () => {
     const toggleLoginRegister = () => {
         setIsLogin(!isLogin);
         resetForm();
-    }; return (
+    };
+
+    // Password strength validation
+    const getPasswordStrength = (password: string) => {
+        const checks = {
+            length: password.length >= 8,
+            upper: /[A-Z]/.test(password),
+            lower: /[a-z]/.test(password),
+            number: /\d/.test(password),
+            special: /[@$!%*?&]/.test(password)
+        };
+
+        const score = Object.values(checks).filter(Boolean).length;
+        return { checks, score };
+    };
+
+    const passwordStrength = getPasswordStrength(formData.password);
+
+    return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-pink-50 to-peach-50 py-6 lg:py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Decorative Background Elements */}
             <div className="absolute top-0 left-0 w-48 lg:w-72 h-48 lg:h-72 bg-gradient-to-br from-orange-300/30 to-pink-300/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
@@ -74,23 +112,51 @@ const AuthPage: React.FC = () => {
                 </div>
 
                 {/* Forms */}                <div className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl p-6 lg:p-8 backdrop-blur-sm border border-white/50">
-                    <form onSubmit={handleEmailPasswordSubmit} className="space-y-4 lg:space-y-5">
-                        {!isLogin && (<div>
-                            <label htmlFor="name" className="block text-xs lg:text-sm font-bold text-gray-700 mb-2">
-                                👤 Họ và tên
-                            </label>
-                            <input
-                                id="name"
-                                name="name"
-                                type="text"
-                                required={!isLogin}
-                                className="w-full px-3 lg:px-4 py-2.5 lg:py-3 border-2 border-gray-200 rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all text-sm lg:text-base"
-                                placeholder="Nhập họ và tên của bạn"
-                                value={formData.name}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        )}
+                    <form onSubmit={handleEmailPasswordSubmit} className="space-y-4 lg:space-y-5">                        {!isLogin && (
+                        <>
+                            <div>
+                                <label htmlFor="name" className="block text-xs lg:text-sm font-bold text-gray-700 mb-2">
+                                    👤 Họ và tên
+                                </label>
+                                <input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    required={!isLogin}
+                                    className="w-full px-3 lg:px-4 py-2.5 lg:py-3 border-2 border-gray-200 rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all text-sm lg:text-base"
+                                    placeholder="Nhập họ và tên của bạn"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="role" className="block text-xs lg:text-sm font-bold text-gray-700 mb-2">
+                                    🎭 Vai trò
+                                </label>                                    <select
+                                    id="role"
+                                    name="role"
+                                    className="w-full px-3 lg:px-4 py-2.5 lg:py-3 border-2 border-gray-200 rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all text-sm lg:text-base"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                >
+                                    <option value="Student">🎓 Học sinh</option>
+                                    <option value="Teacher">👩‍🏫 Giáo viên (Cần phê duyệt)</option>
+                                </select>
+                                {formData.role === 'Teacher' && (
+                                    <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <div className="flex items-start gap-2">
+                                            <span className="text-yellow-600">⚠️</span>
+                                            <div className="text-xs text-yellow-800">
+                                                <p className="font-medium">Lưu ý cho tài khoản Giáo viên:</p>
+                                                <p className="mt-1">Tài khoản giáo viên cần được phê duyệt bởi quản trị viên trước khi có thể đăng nhập. Bạn sẽ nhận được thông báo qua email khi tài khoản được kích hoạt.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
                         <div>
                             <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
                                 ✉️ Địa chỉ email
@@ -106,11 +172,20 @@ const AuthPage: React.FC = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                             />
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
-                                🔒 Mật khẩu
-                            </label>
+                        </div>                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label htmlFor="password" className="block text-sm font-bold text-gray-700">
+                                    🔒 Mật khẩu
+                                </label>
+                                {isLogin && (
+                                    <a
+                                        href="/forgot-password"
+                                        className="text-xs font-medium text-pink-500 hover:text-pink-600 transition-colors"
+                                    >
+                                        Quên mật khẩu?
+                                    </a>
+                                )}
+                            </div>
                             <input
                                 id="password"
                                 name="password"
@@ -118,11 +193,59 @@ const AuthPage: React.FC = () => {
                                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                                 required
                                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                                placeholder={isLogin ? 'Nhập mật khẩu' : 'Tạo mật khẩu mạnh'}
+                                placeholder={isLogin ? 'Nhập mật khẩu' : 'Tạo mật khẩu mạnh (8+ ký tự, chữ hoa, thường, số, ký tự đặc biệt)'}
                                 value={formData.password}
                                 onChange={handleChange}
                             />
+
+                            {/* Password Strength Indicator */}
+                            {!isLogin && formData.password && (
+                                <div className="mt-2 space-y-2">
+                                    <div className="flex items-center gap-1">
+                                        <div className={`h-1 flex-1 rounded ${passwordStrength.score >= 1 ? 'bg-red-400' : 'bg-gray-200'}`}></div>
+                                        <div className={`h-1 flex-1 rounded ${passwordStrength.score >= 3 ? 'bg-yellow-400' : 'bg-gray-200'}`}></div>
+                                        <div className={`h-1 flex-1 rounded ${passwordStrength.score >= 4 ? 'bg-green-400' : 'bg-gray-200'}`}></div>
+                                        <div className={`h-1 flex-1 rounded ${passwordStrength.score === 5 ? 'bg-green-600' : 'bg-gray-200'}`}></div>
+                                    </div>
+                                    <div className="text-xs space-y-1">
+                                        <div className={passwordStrength.checks.length ? 'text-green-600' : 'text-red-500'}>
+                                            {passwordStrength.checks.length ? '✓' : '✗'} Ít nhất 8 ký tự
+                                        </div>
+                                        <div className={passwordStrength.checks.upper ? 'text-green-600' : 'text-red-500'}>
+                                            {passwordStrength.checks.upper ? '✓' : '✗'} Có chữ hoa
+                                        </div>
+                                        <div className={passwordStrength.checks.lower ? 'text-green-600' : 'text-red-500'}>
+                                            {passwordStrength.checks.lower ? '✓' : '✗'} Có chữ thường
+                                        </div>
+                                        <div className={passwordStrength.checks.number ? 'text-green-600' : 'text-red-500'}>
+                                            {passwordStrength.checks.number ? '✓' : '✗'} Có số
+                                        </div>
+                                        <div className={passwordStrength.checks.special ? 'text-green-600' : 'text-red-500'}>
+                                            {passwordStrength.checks.special ? '✓' : '✗'} Có ký tự đặc biệt (@$!%*?&)
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
+                        {!isLogin && (
+                            <div>
+                                <label htmlFor="confirmPassword" className="block text-sm font-bold text-gray-700 mb-2">
+                                    🔒 Xác nhận mật khẩu
+                                </label>
+                                <input
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    required={!isLogin}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
+                                    placeholder="Nhập lại mật khẩu"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        )}
                         {!isLogin && (
                             <div>
                                 <label htmlFor="phoneNumber" className="block text-sm font-bold text-gray-700 mb-2">

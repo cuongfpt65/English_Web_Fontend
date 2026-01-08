@@ -42,25 +42,29 @@ export const adminService = {
 
         );
         return response.data;
-    },
-
-    async approveTeacher(approvalId: string) {
+    }, async approveTeacher(userId: string) {
         const response = await api.post(
-            `/admin/teacher-approvals/approve`,
-            { approvalId },
-
+            `/admin/users/${userId}/approve`,
+            {},
         );
         return response.data;
     },
 
-    async rejectTeacher(approvalId: string, rejectionReason: string) {
+    async rejectTeacher(userId: string, rejectionReason: string) {
         const response = await api.post(
-            `/admin/teacher-approvals/reject`,
-            { approvalId, rejectionReason },
-
+            `/admin/users/${userId}/reject`,
+            { reason: rejectionReason },
         );
         return response.data;
-    },    // Statistics
+    },
+
+    // Get pending teachers (users with Teacher role and Pending status)
+    async getPendingTeachers() {
+        const response = await api.get(
+            `/admin/users/pending-teachers`,
+        );
+        return response.data;
+    },// Statistics
     async getDashboardStatistics() {
         try {
             const response = await api.get(

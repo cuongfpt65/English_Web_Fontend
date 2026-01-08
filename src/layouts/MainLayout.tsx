@@ -166,8 +166,8 @@ const MainLayout: React.FC = () => {
                                 </div>
                             )}                            {user?.role === 'Admin' && (
                                 <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                                    <button                                        className={`w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg ${isSidebarCollapsed && !isMobile ? 'px-3' : ''
-                                            }`}
+                                    <button className={`w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg ${isSidebarCollapsed && !isMobile ? 'px-3' : ''
+                                        }`}
                                     >
                                         <span className="text-lg">👑</span>
                                         {(!isSidebarCollapsed || window.innerWidth < 1024) && <span className="font-medium">Admin Panel</span>}

@@ -61,7 +61,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 interface AuthContextType extends AuthState {
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
-    register: (email: string, password: string, name: string) => Promise<void>;
+    register: (email: string, password: string, confirmPassword: string, name: string, role?: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -107,15 +107,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             dispatch({ type: 'AUTH_ERROR' });
             throw new Error(error.response?.data?.message || error.message || 'Đăng nhập thất bại');
         }
-    };
-
-    const register = async (email: string, password: string, name: string) => {
+    };    const register = async (email: string, password: string, confirmPassword: string, name: string, role: string = 'user') => {
         dispatch({ type: 'AUTH_START' });
         try {
             const response: AuthResponse = await authService.register({
                 email,
                 password,
-                name
+                confirmPassword,
+                name,
+                role
             });
 
             // Lưu token và user vào localStorage

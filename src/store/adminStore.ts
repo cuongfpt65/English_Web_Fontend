@@ -1,19 +1,14 @@
 import { create } from 'zustand';
 import { adminService } from '../services/adminService';
 
-interface TeacherApproval {
+interface PendingTeacher {
     id: string;
-    userId: string;
     fullName: string;
     email: string;
     phoneNumber?: string;
-    qualification: string;
-    experience: string;
-    certificateUrl?: string;
-    status: string;
-    rejectionReason?: string;
     createdAt: string;
-    reviewedAt?: string;
+    status: string;
+    role: string;
 }
 
 interface DashboardStats {
@@ -30,17 +25,16 @@ interface DashboardStats {
 }
 
 interface AdminState {
-    approvals: TeacherApproval[];
+    pendingTeachers: PendingTeacher[];
     dashboardStats: DashboardStats | null;
     users: any[];
     isLoading: boolean;
     error: string | null;
 
     // Teacher Approvals
-    fetchPendingApprovals: () => Promise<void>;
-    fetchAllApprovals: () => Promise<void>;
-    approveTeacher: (approvalId: string) => Promise<void>;
-    rejectTeacher: (approvalId: string, reason: string) => Promise<void>;
+    fetchPendingTeachers: () => Promise<void>;
+    approveTeacher: (userId: string) => Promise<void>;
+    rejectTeacher: (userId: string, reason: string) => Promise<void>;
 
     // Statistics
     fetchDashboardStats: () => Promise<void>;
@@ -53,45 +47,32 @@ interface AdminState {
 }
 
 export const useAdminStore = create<AdminState>((set) => ({
-    approvals: [],
+    pendingTeachers: [],
     dashboardStats: null,
     users: [],
     isLoading: false,
     error: null,
 
-    fetchPendingApprovals: async () => {
+    fetchPendingTeachers: async () => {
         set({ isLoading: true, error: null });
         try {
-            const data = await adminService.getPendingApprovals();
-            set({ approvals: data, isLoading: false });
+            const data = await adminService.getPendingTeachers();
+            set({ pendingTeachers: data, isLoading: false });
         } catch (error: any) {
             set({
-                error: error.response?.data?.message || 'Failed to fetch pending approvals',
+                error: error.response?.data?.message || 'Failed to fetch pending teachers',
                 isLoading: false
             });
         }
     },
 
-    fetchAllApprovals: async () => {
+    approveTeacher: async (userId: string) => {
         set({ isLoading: true, error: null });
         try {
-            const data = await adminService.getAllApprovals();
-            set({ approvals: data, isLoading: false });
-        } catch (error: any) {
-            set({
-                error: error.response?.data?.message || 'Failed to fetch approvals',
-                isLoading: false
-            });
-        }
-    },
-
-    approveTeacher: async (approvalId: string) => {
-        set({ isLoading: true, error: null });
-        try {
-            await adminService.approveTeacher(approvalId);
-            // Refresh approvals list
-            const data = await adminService.getAllApprovals();
-            set({ approvals: data, isLoading: false });
+            await adminService.approveTeacher(userId);
+            // Refresh pending teachers list
+            const data = await adminService.getPendingTeachers();
+            set({ pendingTeachers: data, isLoading: false });
         } catch (error: any) {
             set({
                 error: error.response?.data?.message || 'Failed to approve teacher',
@@ -101,13 +82,13 @@ export const useAdminStore = create<AdminState>((set) => ({
         }
     },
 
-    rejectTeacher: async (approvalId: string, reason: string) => {
+    rejectTeacher: async (userId: string, reason: string) => {
         set({ isLoading: true, error: null });
         try {
-            await adminService.rejectTeacher(approvalId, reason);
-            // Refresh approvals list
-            const data = await adminService.getAllApprovals();
-            set({ approvals: data, isLoading: false });
+            await adminService.rejectTeacher(userId, reason);
+            // Refresh pending teachers list
+            const data = await adminService.getPendingTeachers();
+            set({ pendingTeachers: data, isLoading: false });
         } catch (error: any) {
             set({
                 error: error.response?.data?.message || 'Failed to reject teacher',

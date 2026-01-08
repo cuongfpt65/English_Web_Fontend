@@ -102,7 +102,7 @@ const ProgressPage: React.FC = () => {
                 </div>
             </div>
         );
-    }    return (
+    } return (
         <div className="max-w-6xl mx-auto px-4 py-4 lg:py-8">
             <div className="mb-6 lg:mb-8">
                 <div className="flex items-center gap-2 lg:gap-3 mb-4">
@@ -184,8 +184,8 @@ const ProgressPage: React.FC = () => {
                     </div>
 
                     <div className={`text-center p-4 rounded-lg border ${progressData.learnedWords >= 10
-                            ? 'bg-green-50 border-green-200'
-                            : 'bg-gray-50 border-gray-200'
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-gray-50 border-gray-200'
                         }`}>
                         <div className="text-3xl mb-2">{progressData.learnedWords >= 10 ? '🎯' : '⚪'}</div>
                         <div className="text-sm font-medium text-gray-700">Word Collector</div>
@@ -193,8 +193,8 @@ const ProgressPage: React.FC = () => {
                     </div>
 
                     <div className={`text-center p-4 rounded-lg border ${progressData.chatSessions >= 5
-                            ? 'bg-green-50 border-green-200'
-                            : 'bg-gray-50 border-gray-200'
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-gray-50 border-gray-200'
                         }`}>
                         <div className="text-3xl mb-2">{progressData.chatSessions >= 5 ? '💬' : '⚪'}</div>
                         <div className="text-sm font-medium text-gray-700">Conversationalist</div>
@@ -202,8 +202,8 @@ const ProgressPage: React.FC = () => {
                     </div>
 
                     <div className={`text-center p-4 rounded-lg border ${progressData.streakDays >= 7
-                            ? 'bg-green-50 border-green-200'
-                            : 'bg-gray-50 border-gray-200'
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-gray-50 border-gray-200'
                         }`}>
                         <div className="text-3xl mb-2">{progressData.streakDays >= 7 ? '🔥' : '⚪'}</div>
                         <div className="text-sm font-medium text-gray-700">Consistent Learner</div>

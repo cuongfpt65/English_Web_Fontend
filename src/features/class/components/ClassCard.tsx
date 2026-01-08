@@ -6,7 +6,8 @@ interface ClassCardProps {
     classRoom: ClassRoom;
 }
 
-const ClassCard: React.FC<ClassCardProps> = ({ classRoom }) => {    return (
+const ClassCard: React.FC<ClassCardProps> = ({ classRoom }) => {
+    return (
         <Link to={`/class/${classRoom.id}`} className="block">
             <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 p-4 lg:p-6 hover:scale-105 transform">
                 <div className="flex items-start justify-between mb-3 lg:mb-4">

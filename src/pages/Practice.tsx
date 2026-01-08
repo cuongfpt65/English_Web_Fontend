@@ -108,7 +108,7 @@ const PracticePage: React.FC = () => {
 
     if (gameStarted && selectedGame) {
         const question = mockQuestions[currentQuestion];
-        const selectedGameInfo = gameModes.find(g => g.id === selectedGame);        return (
+        const selectedGameInfo = gameModes.find(g => g.id === selectedGame); return (
             <div className="max-w-4xl mx-auto px-4 py-4 lg:py-8">
                 <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg border border-gray-200 p-4 lg:p-6">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 lg:mb-6 gap-3">
@@ -169,7 +169,7 @@ const PracticePage: React.FC = () => {
                 </div>
             </div>
         );
-    }    return (
+    } return (
         <div className="max-w-6xl mx-auto px-4 py-4 lg:py-8">
             <div className="text-center mb-6 lg:mb-8 px-4">
                 <div className="flex items-center justify-center gap-3 mb-4">

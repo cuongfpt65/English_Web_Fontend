@@ -90,7 +90,7 @@ const LessonsPage: React.FC = () => {
 
     const getUserNote = (vocabularyId: string) => {
         return userVocabularies.find(uv => uv.vocabularyId === vocabularyId)?.note || '';
-    };    return (
+    }; return (
         <div className="max-w-6xl mx-auto px-4 py-4 lg:py-8">
             <div className="mb-6 lg:mb-8">
                 <div className="flex items-center gap-2 lg:gap-3 mb-4 lg:mb-6">
@@ -213,8 +213,8 @@ const VocabularyCard: React.FC<VocabularyCardProps> = ({
         setShowNote(false);
     }; return (
         <div className={`border-2 rounded-2xl p-6 transition-all shadow-md hover:shadow-xl ${isLearned
-                ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300'
-                : 'bg-white border-gray-200 hover:border-pink-300'
+            ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300'
+            : 'bg-white border-gray-200 hover:border-pink-300'
             }`}>
             <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">

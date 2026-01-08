@@ -2,21 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useAdminStore } from '../../store/adminStore';
 
 const TeacherApprovals: React.FC = () => {
-    const { approvals, isLoading, error, fetchAllApprovals, approveTeacher, rejectTeacher, setError } = useAdminStore();
-    const [selectedApproval, setSelectedApproval] = useState<any>(null);
+    const { pendingTeachers, isLoading, error, fetchPendingTeachers, approveTeacher, rejectTeacher, setError } = useAdminStore();
+    const [selectedTeacher, setSelectedTeacher] = useState<any>(null);
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
-    const [filterStatus, setFilterStatus] = useState<'All' | 'Pending' | 'Approved' | 'Rejected'>('All');
 
     useEffect(() => {
-        fetchAllApprovals();
-    }, [fetchAllApprovals]);
-
-    const handleApprove = async (approvalId: string) => {
-        if (window.confirm('Are you sure you want to approve this teacher?')) {
+        fetchPendingTeachers();
+    }, [fetchPendingTeachers]); const handleApprove = async (userId: string) => {
+        if (window.confirm('Bạn có chắc chắn muốn phê duyệt tài khoản giáo viên này?')) {
             try {
-                await approveTeacher(approvalId);
-                alert('Teacher approved successfully!');
+                await approveTeacher(userId);
+                alert('Đã phê duyệt tài khoản giáo viên thành công!');
             } catch (error) {
                 console.error('Failed to approve teacher:', error);
             }
@@ -25,37 +22,21 @@ const TeacherApprovals: React.FC = () => {
 
     const handleReject = async () => {
         if (!rejectionReason.trim()) {
-            alert('Please provide a rejection reason');
+            alert('Vui lòng nhập lý do từ chối');
             return;
         }
 
         try {
-            await rejectTeacher(selectedApproval.id, rejectionReason);
-            alert('Teacher approval rejected');
+            await rejectTeacher(selectedTeacher.id, rejectionReason);
+            alert('Đã từ chối tài khoản giáo viên');
             setShowRejectModal(false);
             setRejectionReason('');
-            setSelectedApproval(null);
+            setSelectedTeacher(null);
         } catch (error) {
             console.error('Failed to reject teacher:', error);
         }
     };
 
-    const filteredApprovals = approvals.filter(approval =>
-        filterStatus === 'All' || approval.status === filterStatus
-    );
-
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'Pending':
-                return <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold">⏳ Pending</span>;
-            case 'Approved':
-                return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">✅ Approved</span>;
-            case 'Rejected':
-                return <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-bold">❌ Rejected</span>;
-            default:
-                return <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-bold">{status}</span>;
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-8">
@@ -74,27 +55,11 @@ const TeacherApprovals: React.FC = () => {
                                 Review and approve teacher applications 📋
                             </p>
                         </div>
-                    </div>
-
-                    {/* Filter Tabs */}
+                    </div>                    {/* Info Stats */}
                     <div className="flex gap-3 flex-wrap">
-                        {['All', 'Pending', 'Approved', 'Rejected'].map((status) => (
-                            <button
-                                key={status}
-                                onClick={() => setFilterStatus(status as any)}
-                                className={`px-6 py-3 rounded-xl font-bold shadow-md hover:shadow-lg transition-all ${filterStatus === status
-                                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                                        : 'bg-white text-gray-700 border-2 border-gray-200'
-                                    }`}
-                            >
-                                {status}
-                                {status === 'Pending' && (
-                                    <span className="ml-2 px-2 py-1 bg-yellow-500 text-white text-xs rounded-full">
-                                        {approvals.filter(a => a.status === 'Pending').length}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
+                        <div className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-xl font-bold shadow-md">
+                            <span className="text-lg">⏳</span> Tài khoản chờ duyệt: <span className="text-xl">{pendingTeachers.length}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -117,96 +82,68 @@ const TeacherApprovals: React.FC = () => {
                             <p className="mt-4 text-lg font-bold text-blue-600">Loading approvals...</p>
                         </div>
                     </div>
-                )}
-
-                {/* Approvals List */}
+                )}                {/* Teachers List */}
                 {!isLoading && (
                     <div className="space-y-4">
-                        {filteredApprovals.length > 0 ? (
-                            filteredApprovals.map((approval) => (
+                        {pendingTeachers.length > 0 ? (
+                            pendingTeachers.map((teacher) => (
                                 <div
-                                    key={approval.id}
-                                    className="bg-white rounded-2xl shadow-lg p-6 border-2 border-blue-100 hover:shadow-xl transition-all"
+                                    key={teacher.id}
+                                    className="bg-white rounded-2xl shadow-lg p-6 border-2 border-yellow-100 hover:shadow-xl transition-all"
                                 >
                                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-3">
-                                                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center">
+                                                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
                                                     <span className="text-2xl">👨‍🏫</span>
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-xl font-bold text-gray-800">{approval.fullName}</h3>
-                                                    <p className="text-sm text-gray-600">{approval.email}</p>
+                                                    <h3 className="text-xl font-bold text-gray-800">{teacher.fullName}</h3>
+                                                    <p className="text-sm text-gray-600">{teacher.email}</p>
                                                 </div>
-                                                {getStatusBadge(approval.status)}
+                                                <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold">⏳ Chờ duyệt</span>
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                                                 <div>
-                                                    <p className="text-xs text-gray-500 font-semibold mb-1">📞 Phone</p>
-                                                    <p className="text-sm text-gray-700">{approval.phoneNumber || 'N/A'}</p>
+                                                    <p className="text-xs text-gray-500 font-semibold mb-1">📞 Số điện thoại</p>
+                                                    <p className="text-sm text-gray-700">{teacher.phoneNumber || 'Chưa cung cấp'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-500 font-semibold mb-1">🎓 Qualification</p>
-                                                    <p className="text-sm text-gray-700">{approval.qualification}</p>
-                                                </div>
-                                                <div className="md:col-span-2">
-                                                    <p className="text-xs text-gray-500 font-semibold mb-1">💼 Experience</p>
-                                                    <p className="text-sm text-gray-700">{approval.experience}</p>
-                                                </div>
-                                                {approval.certificateUrl && (
-                                                    <div className="md:col-span-2">
-                                                        <p className="text-xs text-gray-500 font-semibold mb-1">📄 Certificate</p>
-                                                        <a
-                                                            href={approval.certificateUrl}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-blue-600 hover:text-blue-800 text-sm underline"
-                                                        >
-                                                            View Certificate
-                                                        </a>
-                                                    </div>
-                                                )}
-                                            </div>
+                                                    <p className="text-xs text-gray-500 font-semibold mb-1">📅 Ngày đăng ký</p>
+                                                    <p className="text-sm text-gray-700">{new Date(teacher.createdAt).toLocaleDateString('vi-VN')}</p>
+                                                </div>                                            </div>
 
                                             <div className="text-xs text-gray-500">
-                                                <p>Applied: {new Date(approval.createdAt).toLocaleDateString()}</p>
-                                                {approval.reviewedAt && (
-                                                    <p>Reviewed: {new Date(approval.reviewedAt).toLocaleDateString()}</p>
-                                                )}
-                                                {approval.rejectionReason && (
-                                                    <p className="text-red-600 mt-2">Reason: {approval.rejectionReason}</p>
-                                                )}
+                                                <p>Đăng ký: {new Date(teacher.createdAt).toLocaleDateString('vi-VN')}</p>
+                                                <p className="text-yellow-600 mt-1">Trạng thái: Chờ phê duyệt</p>
                                             </div>
                                         </div>
 
-                                        {approval.status === 'Pending' && (
-                                            <div className="flex gap-3">
-                                                <button
-                                                    onClick={() => handleApprove(approval.id)}
-                                                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
-                                                >
-                                                    ✅ Approve
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedApproval(approval);
-                                                        setShowRejectModal(true);
-                                                    }}
-                                                    className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
-                                                >
-                                                    ❌ Reject
-                                                </button>
-                                            </div>
-                                        )}
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => handleApprove(teacher.id)}
+                                                className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                                            >
+                                                ✅ Phê duyệt
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedTeacher(teacher);
+                                                    setShowRejectModal(true);
+                                                }}
+                                                className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                                            >
+                                                ❌ Từ chối
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            ))
-                        ) : (
+                            ))) : (
                             <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
                                 <span className="text-6xl mb-4 block">📭</span>
-                                <h3 className="text-xl font-bold text-gray-600 mb-2">No approvals found</h3>
-                                <p className="text-gray-500">There are no {filterStatus.toLowerCase()} teacher approvals at the moment.</p>
+                                <h3 className="text-xl font-bold text-gray-600 mb-2">Không có tài khoản chờ duyệt</h3>
+                                <p className="text-gray-500">Hiện tại không có tài khoản giáo viên nào cần phê duyệt.</p>
                             </div>
                         )}
                     </div>
@@ -215,34 +152,33 @@ const TeacherApprovals: React.FC = () => {
                 {/* Reject Modal */}
                 {showRejectModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Reject Teacher Application</h3>
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Từ chối tài khoản giáo viên</h3>
                             <p className="text-gray-600 mb-4">
-                                Please provide a reason for rejecting <strong>{selectedApproval?.fullName}</strong>'s application:
+                                Vui lòng nhập lý do từ chối tài khoản của <strong>{selectedTeacher?.fullName}</strong>:
                             </p>
                             <textarea
                                 value={rejectionReason}
                                 onChange={(e) => setRejectionReason(e.target.value)}
                                 className="w-full p-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none mb-4"
                                 rows={4}
-                                placeholder="Enter rejection reason..."
+                                placeholder="Nhập lý do từ chối..."
                             />
                             <div className="flex gap-3">
                                 <button
                                     onClick={handleReject}
                                     className="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
                                 >
-                                    Confirm Reject
+                                    Xác nhận từ chối
                                 </button>
                                 <button
                                     onClick={() => {
                                         setShowRejectModal(false);
                                         setRejectionReason('');
-                                        setSelectedApproval(null);
+                                        setSelectedTeacher(null);
                                     }}
                                     className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all"
                                 >
-                                    Cancel
+                                    Hủy
                                 </button>
                             </div>
                         </div>

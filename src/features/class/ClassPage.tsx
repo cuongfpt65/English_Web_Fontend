@@ -20,7 +20,7 @@ const ClassPage: React.FC = () => {
 
     useEffect(() => {
         fetchMyClasses();
-    }, [fetchMyClasses]);    return (
+    }, [fetchMyClasses]); return (
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-peach-50 py-4 lg:py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
@@ -40,24 +40,24 @@ const ClassPage: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full sm:w-auto">                            <button
-                                onClick={() => setShowJoinModal(true)}
-                                className="inline-flex items-center justify-center px-3 lg:px-4 py-2 lg:py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 border-2 border-transparent rounded-lg lg:rounded-xl font-bold text-white hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform text-sm lg:text-base w-full sm:w-auto"
+                            onClick={() => setShowJoinModal(true)}
+                            className="inline-flex items-center justify-center px-3 lg:px-4 py-2 lg:py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 border-2 border-transparent rounded-lg lg:rounded-xl font-bold text-white hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform text-sm lg:text-base w-full sm:w-auto"
+                        >
+                            <svg className="w-4 lg:w-5 h-4 lg:h-5 mr-1 lg:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            Join Class
+                        </button>                            {user?.role === 'Teacher' && (
+                            <button
+                                onClick={() => setShowCreateModal(true)}
+                                className="inline-flex items-center justify-center px-3 lg:px-4 py-2 lg:py-2.5 bg-gradient-to-r from-orange-500 to-pink-600 border-2 border-transparent rounded-lg lg:rounded-xl font-bold text-white hover:from-orange-600 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform text-sm lg:text-base w-full sm:w-auto"
                             >
                                 <svg className="w-4 lg:w-5 h-4 lg:h-5 mr-1 lg:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                Join Class
-                            </button>                            {user?.role === 'Teacher' && (
-                                <button
-                                    onClick={() => setShowCreateModal(true)}
-                                    className="inline-flex items-center justify-center px-3 lg:px-4 py-2 lg:py-2.5 bg-gradient-to-r from-orange-500 to-pink-600 border-2 border-transparent rounded-lg lg:rounded-xl font-bold text-white hover:from-orange-600 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform text-sm lg:text-base w-full sm:w-auto"
-                                >
-                                    <svg className="w-4 lg:w-5 h-4 lg:h-5 mr-1 lg:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                    Create Class
-                                </button>
-                            )}
+                                Create Class
+                            </button>
+                        )}
                         </div>
                     </div>
                 </div>                {/* Error Message */}
