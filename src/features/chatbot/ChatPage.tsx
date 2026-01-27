@@ -1,23 +1,20 @@
 import { Plus, Send } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '../../components/Button/Button';
-import { useAuthStore } from '../../store';
-
-interface Message {
-    id: string;
-    sender: 'User' | 'Bot';
-    message: string;
-    createdAt: string;
-}
+import type { ChatMessage, ChatSession } from '../../services/chatService';
+import chatService from '../../services/chatService';
+import ChatHistorySidebar from './ChatHistorySidebar';
 
 type ChatBotType = 'smalltalk' | 'error' | 'grammar_fix' | 'answer_suggest' | 'structure_review' | 'essay';
 
 const ChatPage: React.FC = () => {
-    const { token } = useAuthStore();
-    const [messages, setMessages] = React.useState<Message[]>([]);
-    const [inputMessage, setInputMessage] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
-    const [selectedType, setSelectedType] = React.useState<ChatBotType>('smalltalk');
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [inputMessage, setInputMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [selectedType, setSelectedType] = useState<ChatBotType>('smalltalk');
+    // Chat history states
+    const [sessions, setSessions] = useState<ChatSession[]>([]);
+    const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
     const chatBotTypes: Array<{ value: ChatBotType; label: string; emoji: string; description: string }> = [
         { value: 'smalltalk', label: 'Small Talk', emoji: '💬', description: 'Casual conversation' },
@@ -28,9 +25,56 @@ const ChatPage: React.FC = () => {
         { value: 'essay', label: 'Essay Help', emoji: '📄', description: 'Essay writing assistance' },
     ];
 
-    const createNewConversation = () => {
-        setMessages([]);
-        setInputMessage('');
+    // Load sessions on mount
+    useEffect(() => {
+        loadSessions();
+    }, []); const loadSessions = async () => {
+        try {
+            const data = await chatService.getSessions();
+            setSessions(data);
+        } catch (error) {
+            console.error('Failed to load sessions:', error);
+        }
+    };
+
+    const loadSessionMessages = async (sessionId: string) => {
+        try {
+            const data = await chatService.getSessionMessages(sessionId);
+            setMessages(data);
+            setCurrentSessionId(sessionId);
+        } catch (error) {
+            console.error('Failed to load messages:', error);
+        }
+    };
+
+    const createNewConversation = async () => {
+        try {
+            const session = await chatService.createSession(`Chat ${new Date().toLocaleString()}`);
+            setSessions([session, ...sessions]);
+            setCurrentSessionId(session.id);
+            setMessages([]);
+            setInputMessage('');
+        } catch (error) {
+            console.error('Failed to create session:', error);
+            setCurrentSessionId(null);
+            setMessages([]);
+            setInputMessage('');
+        }
+    };
+
+    const handleSelectSession = (sessionId: string) => {
+        loadSessionMessages(sessionId);
+    };
+
+    const handleRenameSession = async (sessionId: string, newTitle: string) => {
+        try {
+            await chatService.updateSessionTitle(sessionId, newTitle);
+            setSessions(sessions.map(s =>
+                s.id === sessionId ? { ...s, title: newTitle } : s
+            ));
+        } catch (error) {
+            console.error('Failed to rename session:', error);
+        }
     };
 
     const sendMessage = async () => {
@@ -40,51 +84,33 @@ const ChatPage: React.FC = () => {
         const messageText = inputMessage;
         setInputMessage('');
 
-        const userMessage: Message = {
-            id: Date.now().toString(),
+        const tempUserMessage: ChatMessage = {
+            id: `temp-${Date.now()}`,
             sender: 'User',
             message: messageText,
             createdAt: new Date().toISOString(),
         };
-
-        // dùng callback để tránh lỗi state cũ
-        setMessages((prev) => [...prev, userMessage]);
-
-        try {
-            const response = await fetch('https://apisoctrang.azurewebsites.net/api/ChatBot', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    type: selectedType,
-                    message: messageText,
-                }),
+        setMessages((prev) => [...prev, tempUserMessage]); try {
+            const response = await chatService.sendMessage({
+                type: selectedType,
+                message: messageText,
+                sessionId: currentSessionId || undefined,
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                const botMessage: Message = {
-                    id: (Date.now() + 1).toString(),
-                    sender: 'Bot',
-                    message: data.answer || 'No response from server',
-                    createdAt: new Date().toISOString(),
-                };
-                setMessages((prev) => [...prev, botMessage]);
-            } else {
-                const errorMessage: Message = {
-                    id: (Date.now() + 1).toString(),
-                    sender: 'Bot',
-                    message: 'Sorry, there was an error processing your request.',
-                    createdAt: new Date().toISOString(),
-                };
-                setMessages((prev) => [...prev, errorMessage]);
+            if (response.sessionId && !currentSessionId) {
+                setCurrentSessionId(response.sessionId);
+                await loadSessions();
+            }
+
+            if (response.sessionId) {
+                await loadSessionMessages(response.sessionId);
             }
         } catch (error) {
             console.error('Failed to send message:', error);
-            const errorMessage: Message = {
-                id: (Date.now() + 1).toString(),
+            setMessages((prev) => prev.filter(m => m.id !== tempUserMessage.id));
+
+            const errorMessage: ChatMessage = {
+                id: `error-${Date.now()}`,
                 sender: 'Bot',
                 message: 'Sorry, there was an error processing your request.',
                 createdAt: new Date().toISOString(),
@@ -105,8 +131,19 @@ const ChatPage: React.FC = () => {
                     {line.trim()}
                 </p>
             ));
-    }; return (
+    };
+
+    return (
         <div className="flex h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-peach-50">
+            {/* Sidebar */}
+            <ChatHistorySidebar
+                sessions={sessions}
+                currentSessionId={currentSessionId}
+                onSelectSession={handleSelectSession}
+                onNewChat={createNewConversation}
+                onRenameSession={handleRenameSession}
+            />
+
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full">
                 {/* Header */}
@@ -120,7 +157,9 @@ const ChatPage: React.FC = () => {
                                 <h2 className="text-lg lg:text-xl font-extrabold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent truncate">
                                     AI English Tutor
                                 </h2>
-                                <p className="text-xs lg:text-sm text-gray-500 font-medium truncate">Your personal language assistant</p>
+                                <p className="text-xs lg:text-sm text-gray-500 font-medium truncate">
+                                    {currentSessionId ? 'Chat with history' : 'Start a new conversation'}
+                                </p>
                             </div>
                         </div>
                         <Button onClick={createNewConversation} variant="primary" className="!rounded-lg lg:!rounded-xl flex-shrink-0 !px-3 lg:!px-4 !py-2 !text-sm lg:!text-base">
@@ -129,7 +168,7 @@ const ChatPage: React.FC = () => {
                             <span className="sm:hidden">New</span>
                         </Button>
                     </div>
-                </div>                {/* Messages */}
+                </div>{/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-3 lg:space-y-4">
                     {messages.length === 0 ? (
                         <div className="flex items-center justify-center h-full">

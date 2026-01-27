@@ -25,11 +25,16 @@ const MainLayout: React.FC = () => {
             { path: '/chat', label: 'AI Chat', icon: '💬' },
             { path: '/lessons', label: 'Lessons', icon: '📚' },
             { path: '/vocabulary', label: 'Vocabulary', icon: '📖' },
-
+            { path: '/documents', label: 'Documents', icon: '📄' },
             { path: '/class', label: 'Classes', icon: '👥' },
             { path: '/practice', label: 'Practice', icon: '✏️' },
             { path: '/progress', label: 'Progress', icon: '📊' },
         ];
+
+        // Add teacher-specific links
+        if (user?.role === 'Teacher' || user?.role === 'Admin') {
+            items.push({ path: '/teacher/documents', label: 'Manage Docs', icon: '📁' });
+        }
 
         // Add teacher request link if user is student
         if (user?.role === 'Student') {

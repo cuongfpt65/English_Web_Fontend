@@ -18,6 +18,8 @@ import Home from '../pages/Home';
 import LessonsPage from '../pages/Lessons';
 import PracticePage from '../pages/Practice';
 import ProgressPage from '../pages/Progress';
+import StudentDocuments from '../pages/StudentDocuments';
+import TeacherDocuments from '../pages/TeacherDocuments';
 import { useAuthStore } from '../store';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -34,6 +36,20 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
 
     if (user?.role !== 'Admin') {
+        return <Navigate to="/" replace />;
+    }
+
+    return <>{children}</>;
+};
+
+const TeacherRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { isAuthenticated, user } = useAuthStore();
+
+    if (!isAuthenticated) {
+        return <Navigate to="/auth" replace />;
+    }
+
+    if (user?.role !== 'Teacher' && user?.role !== 'Admin') {
         return <Navigate to="/" replace />;
     }
 
@@ -127,6 +143,22 @@ const AppRoutes: React.FC = () => {
                             <ProtectedRoute>
                                 <RequestTeacherPage />
                             </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="documents"
+                        element={
+                            <ProtectedRoute>
+                                <StudentDocuments />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="teacher/documents"
+                        element={
+                            <TeacherRoute>
+                                <TeacherDocuments />
+                            </TeacherRoute>
                         }
                     />
                 </Route>
