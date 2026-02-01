@@ -88,4 +88,23 @@ export const vocabularyService = {
         const response = await api.get(`/Vocabulary/${id}`);
         return response.data;
     },
+
+    // Check if words already exist in user's vocabulary
+    async checkVocabularyExists(words: string[]): Promise<string[]> {
+        const response = await api.post('/Vocabulary/check-exists', { words });
+        return response.data.existingWords || [];
+    },
+
+    // Add multiple vocabularies at once (batch)
+    async addVocabularyBatch(words: Array<{
+        word: string;
+        meaning: string;
+        example?: string;
+        category?: string;
+        topic?: string;
+        level?: string;
+    }>): Promise<{ addedCount: number; skippedCount: number }> {
+        const response = await api.post('/Vocabulary/batch', { words });
+        return response.data;
+    },
 };

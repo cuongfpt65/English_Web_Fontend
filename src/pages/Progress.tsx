@@ -14,6 +14,7 @@ interface ActivityItem {
     date: string;
     type: 'vocabulary' | 'chat' | 'lesson';
     description: string;
+    topic?: string;
 }
 
 const ProgressPage: React.FC = () => {
@@ -30,48 +31,35 @@ const ProgressPage: React.FC = () => {
 
     useEffect(() => {
         fetchProgressData();
-    }, []);
-
-    const fetchProgressData = async () => {
+    }, []); const fetchProgressData = async () => {
         try {
             setIsLoading(true);
-            // For now, let's create mock data since we don't have a progress endpoint yet
-            // In a real app, this would be: const response = await api.get('/progress');
 
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Import API client
+            const api = (await import('../services/api')).default;
+
+            // Fetch real progress data from backend
+            const response = await api.get('/progress');
 
             setProgressData({
-                totalWords: 150,
-                learnedWords: 45,
-                chatSessions: 8,
-                totalMessages: 124,
-                streakDays: 5,
-                recentActivity: [
-                    {
-                        date: new Date().toISOString(),
-                        type: 'vocabulary',
-                        description: 'Learned 3 new words about Technology'
-                    },
-                    {
-                        date: new Date(Date.now() - 86400000).toISOString(),
-                        type: 'chat',
-                        description: 'Had a 15-minute conversation with AI tutor'
-                    },
-                    {
-                        date: new Date(Date.now() - 172800000).toISOString(),
-                        type: 'vocabulary',
-                        description: 'Reviewed 10 Business vocabulary words'
-                    },
-                    {
-                        date: new Date(Date.now() - 259200000).toISOString(),
-                        type: 'lesson',
-                        description: 'Completed Food & Restaurant lesson'
-                    }
-                ]
+                totalWords: response.data.totalWords || 0,
+                learnedWords: response.data.learnedWords || 0,
+                chatSessions: response.data.chatSessions || 0,
+                totalMessages: response.data.totalMessages || 0,
+                streakDays: response.data.streakDays || 0,
+                recentActivity: response.data.recentActivity || []
             });
         } catch (error) {
             console.error('Error fetching progress data:', error);
+            // Set empty state on error
+            setProgressData({
+                totalWords: 0,
+                learnedWords: 0,
+                chatSessions: 0,
+                totalMessages: 0,
+                streakDays: 0,
+                recentActivity: []
+            });
         } finally {
             setIsLoading(false);
         }
@@ -227,13 +215,13 @@ const ProgressPage: React.FC = () => {
             {/* Recent Activity */}
             <div className="bg-white p-6 rounded-lg shadow-sm border">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
-                <div className="space-y-4">
-                    {progressData.recentActivity.length > 0 ? (
-                        progressData.recentActivity.map((activity, index) => (
-                            <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                                <div className="text-2xl">{getActivityIcon(activity.type)}</div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium text-gray-900">{activity.description}</p>
+                <div className="space-y-4">                    {progressData.recentActivity.length > 0 ? (
+                    progressData.recentActivity.map((activity, index) => (
+                        <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div className="text-2xl">{getActivityIcon(activity.type)}</div>
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900">{activity.description}</p>
+                                <div className="flex items-center gap-2">
                                     <p className="text-xs text-gray-500">
                                         {new Date(activity.date).toLocaleDateString('en-US', {
                                             month: 'short',
@@ -242,14 +230,21 @@ const ProgressPage: React.FC = () => {
                                             minute: '2-digit'
                                         })}
                                     </p>
+                                    {activity.topic && (
+                                        <>
+                                            <span className="text-xs text-gray-400">•</span>
+                                            <span className="text-xs text-orange-600 font-medium">{activity.topic}</span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        <div className="text-center text-gray-500 py-8">
-                            <p>No recent activity. Start learning to see your progress!</p>
                         </div>
-                    )}
+                    ))
+                ) : (
+                    <div className="text-center text-gray-500 py-8">
+                        <p>No recent activity. Start learning to see your progress!</p>
+                    </div>
+                )}
                 </div>
             </div>
         </div>

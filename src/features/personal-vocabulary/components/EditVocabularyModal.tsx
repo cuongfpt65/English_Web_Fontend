@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
 import type { MyVocab } from '../types';
 
-interface AddVocabularyModalProps {
+interface EditVocabularyModalProps {
+    vocabulary: MyVocab;
     onClose: () => void;
-    onAdd: (vocab: Partial<MyVocab>) => Promise<void>;
+    onUpdate: (id: string, vocab: Partial<MyVocab>) => Promise<void>;
 }
 
-const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd }) => {
+const EditVocabularyModal: React.FC<EditVocabularyModalProps> = ({
+    vocabulary,
+    onClose,
+    onUpdate
+}) => {
     const [formData, setFormData] = useState({
-        word: '',
-        meaning: '',
-        example: '',
-        imageUrl: '',
-        topic: '',
-        level: '',
-        note: '',
-        isLearned: false
+        word: vocabulary.word,
+        meaning: vocabulary.meaning,
+        example: vocabulary.example || '',
+        imageUrl: vocabulary.imageUrl || '',
+        topic: vocabulary.topic || '',
+        level: vocabulary.level || '',
+        note: vocabulary.note || '',
+        isLearned: vocabulary.isLearned
     });
     const [loading, setLoading] = useState(false);
 
@@ -28,7 +33,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
 
         setLoading(true);
         try {
-            await onAdd(formData);
+            await onUpdate(vocabulary.id, formData);
         } catch (error) {
             // Error already handled in parent
         } finally {
@@ -48,8 +53,8 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 lg:p-8 my-8">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        ➕ Thêm từ vựng mới
+                    <h2 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        ✏️ Chỉnh sửa từ vựng
                     </h2>
                     <button
                         onClick={onClose}
@@ -74,7 +79,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                             onChange={handleChange}
                             required
                             placeholder="Nhập từ vựng..."
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 
@@ -90,7 +95,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                             onChange={handleChange}
                             required
                             placeholder="Nhập nghĩa..."
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 
@@ -105,7 +110,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                             onChange={handleChange}
                             rows={3}
                             placeholder="Nhập câu ví dụ..."
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                         />
                     </div>
 
@@ -120,7 +125,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                             value={formData.imageUrl}
                             onChange={handleChange}
                             placeholder="https://example.com/image.jpg"
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 
@@ -136,7 +141,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                                 value={formData.topic}
                                 onChange={handleChange}
                                 placeholder="VD: Animals, Food..."
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
@@ -148,7 +153,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                                 name="level"
                                 value={formData.level}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
                                 <option value="">Chọn cấp độ</option>
                                 <option value="A1">A1</option>
@@ -172,7 +177,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                             onChange={handleChange}
                             rows={2}
                             placeholder="Ghi chú riêng của bạn..."
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                         />
                     </div>
 
@@ -184,7 +189,7 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                             name="isLearned"
                             checked={formData.isLearned}
                             onChange={handleChange}
-                            className="w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
                         <label htmlFor="isLearned" className="text-sm font-semibold text-gray-700">
                             Đánh dấu là đã học
@@ -196,9 +201,9 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Đang thêm...' : '✅ Thêm từ vựng'}
+                            {loading ? 'Đang cập nhật...' : '✅ Lưu thay đổi'}
                         </button>
                         <button
                             type="button"
@@ -214,4 +219,4 @@ const AddVocabularyModal: React.FC<AddVocabularyModalProps> = ({ onClose, onAdd 
     );
 };
 
-export default AddVocabularyModal;
+export default EditVocabularyModal;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiBookOpen, FiDownload, FiEye, FiFile, FiSearch } from 'react-icons/fi';
+import DocumentViewer from '../components/DocumentViewer';
 import documentService, { type Document, type DocumentCategory } from '../services/documentService';
 
 export default function StudentDocuments() {
@@ -11,6 +12,8 @@ export default function StudentDocuments() {
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFileType, setSelectedFileType] = useState<string>('');
+    const [viewerOpen, setViewerOpen] = useState(false);
+    const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
     useEffect(() => {
         loadCategories();
@@ -46,39 +49,42 @@ export default function StudentDocuments() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleViewDocument = async (doc: Document) => {
+    }; const handleViewDocument = async (doc: Document) => {
         try {
             await documentService.recordView(doc.id);
-            window.open(doc.fileUrl, '_blank');
+
+            // Open in modal viewer
+            setSelectedDocument(doc);
+            setViewerOpen(true);
+
             // Refresh to update view count
             loadDocuments();
         } catch (err: any) {
             console.error('Error recording view:', err);
         }
-    };
-
-    const handleDownloadDocument = async (doc: Document) => {
+    }; const handleDownloadDocument = async (doc: Document) => {
         try {
             await documentService.recordDownload(doc.id);
+
+            // Create a temporary link to force download
             const link = document.createElement('a');
             link.href = doc.fileUrl;
             link.download = doc.fileName;
+            link.setAttribute('download', doc.fileName);
             link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+
             // Refresh to update download count
             loadDocuments();
         } catch (err: any) {
             console.error('Error recording download:', err);
         }
-    };
-
-    const getFileIcon = (fileType: string) => {
+    }; const getFileIcon = (fileType: string) => {
         const type = fileType.toLowerCase();
-        if (type === 'pdf') return '📄';
         if (type === 'doc' || type === 'docx') return '📘';
         return '📎';
     };
@@ -128,9 +134,7 @@ export default function StudentDocuments() {
                                     {cat.name} ({cat.documentCount})
                                 </option>
                             ))}
-                        </select>
-
-                        <select
+                        </select>                        <select
                             value={selectedFileType}
                             onChange={(e) => {
                                 setSelectedFileType(e.target.value);
@@ -139,7 +143,6 @@ export default function StudentDocuments() {
                             className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                             <option value="">📎 Tất cả định dạng</option>
-                            <option value="pdf">PDF</option>
                             <option value="doc">DOC</option>
                             <option value="docx">DOCX</option>
                         </select>
@@ -243,8 +246,8 @@ export default function StudentDocuments() {
                                             key={page}
                                             onClick={() => setCurrentPage(page)}
                                             className={`px-4 py-2 rounded-lg transition ${currentPage === page
-                                                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                                 }`}
                                         >
                                             {page}
@@ -259,9 +262,7 @@ export default function StudentDocuments() {
                                         Sau →
                                     </button>
                                 </div>
-                            )}
-
-                            {/* Summary */}
+                            )}                            {/* Summary */}
                             <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm text-gray-600">
                                 Hiển thị <span className="font-semibold text-blue-600">{documents.length}</span> tài liệu
                                 {searchTerm && (
@@ -272,6 +273,19 @@ export default function StudentDocuments() {
                     )}
                 </div>
             </div>
+
+            {/* Document Viewer Modal */}
+            {selectedDocument && (
+                <DocumentViewer
+                    isOpen={viewerOpen}
+                    onClose={() => {
+                        setViewerOpen(false);
+                        setSelectedDocument(null);
+                    }}
+                    document={selectedDocument}
+                    onDownload={() => handleDownloadDocument(selectedDocument)}
+                />
+            )}
         </div>
     );
 }

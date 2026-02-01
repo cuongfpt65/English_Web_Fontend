@@ -132,21 +132,10 @@ export const adminService = {
 
         );
         return response.data;
-    },
-
-    // User Management
+    },    // User Management
     async getAllUsers() {
         const response = await api.get(
             `/admin/users`,
-
-        );
-        return response.data;
-    },
-
-    async changeUserRole(userId: string, role: string) {
-        const response = await api.put(
-            `/admin/users/role`,
-            { userId, role },
 
         );
         return response.data;
@@ -157,6 +146,14 @@ export const adminService = {
             `/admin/users/status`,
             { userId, isActive },
 
+        );
+        return response.data;
+    },
+
+    async resetUserPassword(userId: string, newPassword: string) {
+        const response = await api.put(
+            `/admin/users/reset-password`,
+            { userId, newPassword },
         );
         return response.data;
     },

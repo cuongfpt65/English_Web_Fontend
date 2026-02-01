@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>🔍 Avatar Debug Tool</title>
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: 600;
+            color: #555;
+        }
+        .value {
+            color: #333;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            max-width: 400px;
+            text-align: right;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        .alert.danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🔍 Avatar Debug Tool</h1>
+            <p class="subtitle">Công cụ kiểm tra và debug avatar trong
+                localStorage</p>
+
+            <div class="section">
+                <h2>📊 Auth Store Status</h2>
+                <div id="authStatus"></div>
+            </div>
+
+            <div class="section">
+                <h2>👤 User Information</h2>
+                <div id="userInfo"></div>
+            </div>
+
+            <div class="section">
+                <h2>🖼️ Avatar Status</h2>
+                <div id="avatarStatus"></div>
+                <div class="preview" id="avatarPreview"></div>
+            </div>
+
+            <div class="section">
+                <h2>🔧 Debug Actions</h2>
+                <button onclick="checkAuth()">🔄 Refresh Check</button>
+                <button onclick="copyAuthStore()">📋 Copy Auth Store</button>
+                <button onclick="clearStorage()">🗑️ Clear Storage</button>
+                <button onclick="testAvatarUrl()">🧪 Test Avatar URL</button>
+            </div>
+
+            <div id="rawData" class="section" style="display: none;">
+                <h2>📝 Raw Data</h2>
+                <div class="code-block" id="rawDataContent"></div>
+            </div>
+        </div>
+
+        <script>
+        function checkAuth() {
+            const authStore = localStorage.getItem('auth-storage');
+            const authStatusDiv = document.getElementById('authStatus');
+            const userInfoDiv = document.getElementById('userInfo');
+            const avatarStatusDiv = document.getElementById('avatarStatus');
+            const avatarPreviewDiv = document.getElementById('avatarPreview');
+            const rawDataDiv = document.getElementById('rawData');
+            const rawDataContent = document.getElementById('rawDataContent');
+
+            if (!authStore) {
+                authStatusDiv.innerHTML = `
+                    <div class="alert danger">
+                        ❌ Không tìm thấy auth-storage trong localStorage!<br>
+                        <small>Bạn cần login trước.</small>
+                    </div>
+                `;
+                userInfoDiv.innerHTML = '';
+                avatarStatusDiv.innerHTML = '';
+                avatarPreviewDiv.innerHTML = '';
+                return;
+            }
+
+            try {
+                const data = JSON.parse(authStore);
+                const user = data.state?.user;
+                const token = data.state?.token;
+                const isAuthenticated = data.state?.isAuthenticated;
+
+                // Auth Status
+                authStatusDiv.innerHTML = `
+                    <div class="info-row">
+                        <span class="label">Authentication:</span>
+                        <span class="value">
+                            <span class="status ${isAuthenticated ? 'success' : 'error'}">
+                                ${isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Token:</span>
+                        <span class="value">${token ? '✅ Present' : '❌ Missing'}</span>
+                    </div>
+                `;
+
+                // User Info
+                if (user) {
+                    userInfoDiv.innerHTML = `
+                        <div class="info-row">
+                            <span class="label">ID:</span>
+                            <span class="value">${user.id || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Name:</span>
+                            <span class="value">${user.name || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Full Name:</span>
+                            <span class="value">${user.fullName || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Email:</span>
+                            <span class="value">${user.email || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Role:</span>
+                            <span class="value">
+                                <span class="status ${user.role ? 'success' : 'warning'}">
+                                    ${user.role || 'N/A'}
+                                </span>
+                            </span>
+                        </div>
+                    `;
+                } else {
+                    userInfoDiv.innerHTML = `
+                        <div class="alert danger">❌ User object không tồn tại!</div>
+                    `;
+                }
+
+                // Avatar Status
+                if (user?.avatarUrl) {
+                    avatarStatusDiv.innerHTML = `
+                        <div class="info-row">
+                            <span class="label">Avatar URL:</span>
+                            <span class="value">
+                                <span class="status success">✅ Present</span>
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">URL:</span>
+                            <span class="value">${user.avatarUrl}</span>
+                        </div>
+                    `;
+
+                    // Preview
+                    avatarPreviewDiv.innerHTML = `
+                        <div class="avatar">
+                            <img 
+                                src="${user.avatarUrl}" 
+                                alt="${user.name}"
+                                onerror="this.style.display='none'; this.parentElement.innerHTML='${user.name?.charAt(0).toUpperCase() || '?'}'"
+                            >
+                        </div>
+                        <div>
+                            <strong>Avatar Preview</strong><br>
+                            <small style="color: #666;">Nếu ảnh không hiển thị, có thể URL không hợp lệ hoặc CORS issue</small>
+                        </div>
+                    `;
+                } else {
+                    avatarStatusDiv.innerHTML = `
+                        <div class="alert danger">
+                            ❌ Avatar URL không tồn tại!<br>
+                            <small>User chưa upload avatar hoặc backend không trả về avatarUrl.</small>
+                        </div>
+                    `;
+
+                    if (user?.name) {
+                        avatarPreviewDiv.innerHTML = `
+                            <div class="avatar">
+                                ${user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <strong>Fallback: First Letter</strong><br>
+                                <small style="color: #666;">Hiển thị chữ cái đầu vì không có avatar</small>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Raw Data
+                rawDataDiv.style.display = 'block';
+                rawDataContent.textContent = JSON.stringify(data, null, 2);
+
+            } catch (error) {
+                authStatusDiv.innerHTML = `
+                    <div class="alert danger">
+                        ❌ Lỗi parse JSON:<br>
+                        <code>${error.message}</code>
+                    </div>
+                `;
+            }
+        }
+
+        function copyAuthStore() {
+            const authStore = localStorage.getItem('auth-storage');
+            if (authStore) {
+                navigator.clipboard.writeText(authStore).then(() => {
+                    alert('✅ Đã copy auth-storage vào clipboard!');
+                });
+            } else {
+                alert('❌ Không có auth-storage để copy!');
+            }
+        }
+
+        function clearStorage() {
+            if (confirm('⚠️ Bạn có chắc muốn xóa toàn bộ localStorage?\nBạn sẽ bị logout!')) {
+                localStorage.clear();
+                alert('✅ Đã xóa localStorage!');
+                checkAuth();
+            }
+        }
+
+        function testAvatarUrl() {
+            const authStore = localStorage.getItem('auth-storage');
+            if (!authStore) {
+                alert('❌ Không có auth-storage!');
+                return;
+            }
+
+            try {
+                const data = JSON.parse(authStore);
+                const avatarUrl = data.state?.user?.avatarUrl;
+
+                if (!avatarUrl) {
+                    alert('❌ Không có avatar URL để test!');
+                    return;
+                }
+
+                console.log('🧪 Testing avatar URL:', avatarUrl);
+
+                const img = new Image();
+                img.onload = () => {
+                    console.log('✅ Avatar loaded successfully!');
+                    alert(`✅ Avatar URL hợp lệ!\n\nURL: ${avatarUrl}\nSize: ${img.width}x${img.height}`);
+                };
+                img.onerror = () => {
+                    console.error('❌ Avatar failed to load!');
+                    alert(`❌ Không thể load avatar!\n\nURL: ${avatarUrl}\n\nKiểm tra:\n- CORS policy\n- URL có hợp lệ không\n- Network connection`);
+                };
+                img.src = avatarUrl;
+
+            } catch (error) {
+                alert('❌ Lỗi: ' + error.message);
+            }
+        }
+
+        // Auto check on load
+        window.addEventListener('load', checkAuth);
+
+        // Auto refresh every 5 seconds
+        setInterval(checkAuth, 5000);
+    </script>
+    </body>
+</html>

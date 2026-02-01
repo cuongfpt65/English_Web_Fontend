@@ -14,20 +14,6 @@ export interface RegisterRequest {
     phoneNumber?: string;
 }
 
-export interface SendEmailVerificationRequest {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    name: string;
-    role: string;
-    phoneNumber?: string;
-}
-
-export interface VerifyEmailRequest {
-    email: string;
-    code: string;
-}
-
 export interface PhoneLoginRequest {
     phoneNumber: string;
     code: string;
@@ -47,6 +33,8 @@ export interface AuthResponse {
         email: string;
         phoneNumber?: string;
         name: string;
+        fullName?: string;
+        avatarUrl?: string;
         role?: string;
         status?: string;
     };
@@ -82,20 +70,8 @@ export const authService = {
     async login(request: LoginRequest): Promise<AuthResponse> {
         const response = await api.post('/auth/login', request);
         return response.data;
-    },
-
-    async register(request: RegisterRequest): Promise<AuthResponse> {
+    }, async register(request: RegisterRequest): Promise<AuthResponse> {
         const response = await api.post('/auth/register', request);
-        return response.data;
-    },
-
-    async sendEmailVerification(request: SendEmailVerificationRequest): Promise<MessageResponse> {
-        const response = await api.post('/auth/send-email-verification', request);
-        return response.data;
-    },
-
-    async verifyEmailAndRegister(request: VerifyEmailRequest): Promise<AuthResponse> {
-        const response = await api.post('/auth/verify-email', request);
         return response.data;
     },
 

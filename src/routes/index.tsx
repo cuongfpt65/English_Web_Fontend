@@ -10,13 +10,14 @@ import ForgotPasswordPage from '../features/auth/ForgotPasswordPage';
 import ChatPage from '../features/chatbot/ChatPage';
 import ClassDetailPage from '../features/class/ClassDetailPage';
 import ClassPage from '../features/class/ClassPage';
+import MyVocabularyPage from '../features/personal-vocabulary/MyVocabularyPage';
 import VocabularyPage from '../features/vocabulary/VocabularyPage';
 import AdminLayout from '../layouts/AdminLayout';
 import MainLayout from '../layouts/MainLayout';
 import About from '../pages/About';
 import Home from '../pages/Home';
 import LessonsPage from '../pages/Lessons';
-import PracticePage from '../pages/Practice';
+import ProfilePage from '../pages/ProfilePage';
 import ProgressPage from '../pages/Progress';
 import StudentDocuments from '../pages/StudentDocuments';
 import TeacherDocuments from '../pages/TeacherDocuments';
@@ -108,14 +109,21 @@ const AppRoutes: React.FC = () => {
                         }
                     />
                     <Route
+                        path="my-vocabulary"
+                        element={
+                            <ProtectedRoute>
+                                <MyVocabularyPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
                         path="class"
                         element={
                             <ProtectedRoute>
                                 <ClassPage />
                             </ProtectedRoute>
                         }
-                    />
-                    <Route
+                    /><Route
                         path="class/:classId"
                         element={
                             <ProtectedRoute>
@@ -124,20 +132,22 @@ const AppRoutes: React.FC = () => {
                         }
                     />
                     <Route
-                        path="practice"
-                        element={
-                            <ProtectedRoute>
-                                <PracticePage />
-                            </ProtectedRoute>
-                        }
-                    />                    <Route
                         path="progress"
                         element={
                             <ProtectedRoute>
                                 <ProgressPage />
                             </ProtectedRoute>
                         }
-                    />                    <Route
+                    />
+                    <Route
+                        path="profile"
+                        element={
+                            <ProtectedRoute>
+                                <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
                         path="request-teacher"
                         element={
                             <ProtectedRoute>

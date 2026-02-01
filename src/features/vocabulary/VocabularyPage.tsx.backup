@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useVocabularyStore } from '../../store/vocabularyStore';
 import AddVocabularyModal from './components/AddVocabularyModal';
-import AIQuizModal from './components/AIQuizModal';
 import SearchBar from './components/SearchBar';
 import StudyMode from './components/StudyMode';
 import VocabularyCard from './components/VocabularyCard';
 import VocabularyFilters from './components/VocabularyFilters';
 import VocabularyQuiz from './components/VocabularyQuiz';
 import VocabularyStatsPanel from './components/VocabularyStatsPanel';
+import AIQuizModal from './components/AIQuizModal';
 
 const VocabularyPage: React.FC = () => {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -104,9 +104,10 @@ const VocabularyPage: React.FC = () => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                         </svg>
                                         Quiz
-                                    </button>                                    <button
+                                    </button>
+                                    <button
                                         onClick={() => setShowAIQuiz(true)}
-                                        disabled={vocabularies.length < 5}
+                                        disabled={userVocabularies.filter(uv => uv.isLearned).length < 5}
                                         className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 lg:px-4 py-2 lg:py-2.5 bg-gradient-to-r from-blue-500 to-cyan-600 border-2 border-transparent rounded-lg lg:rounded-xl font-bold text-white hover:from-blue-600 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm lg:text-base"
                                     >
                                         <span className="text-lg mr-1 lg:mr-2">🤖</span>
@@ -253,10 +254,9 @@ const VocabularyPage: React.FC = () => {
                                         </nav>
                                     </div>
                                 )}
-                            </>)}
-                    </div>
-
-                    {/* Add Vocabulary Modal */}
+                            </>
+                        )}
+                    </div>            {/* Add Vocabulary Modal */}
                     <AddVocabularyModal
                         isOpen={showAddModal}
                         onClose={() => setShowAddModal(false)}
@@ -286,11 +286,12 @@ const VocabularyPage: React.FC = () => {
                     {showAIQuiz && (
                         <AIQuizModal
                             onClose={() => setShowAIQuiz(false)}
-                            totalVocabularyCount={vocabularies.length}
+                            totalVocabularyCount={userVocabularies.filter(uv => uv.isLearned).length}
                         />
                     )}
                 </div>
-            );
+            </div>
+        );
 };
 
 export default VocabularyPage;

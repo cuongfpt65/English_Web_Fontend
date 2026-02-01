@@ -7,9 +7,7 @@ const MainLayout: React.FC = () => {
     const location = useLocation();
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
-
-    // Check if device is mobile
+    const [isMobile, setIsMobile] = useState(false);    // Check if device is mobile
     React.useEffect(() => {
         const checkMobile = () => {
             setIsMobile(window.innerWidth < 1024);
@@ -19,15 +17,23 @@ const MainLayout: React.FC = () => {
         window.addEventListener('resize', checkMobile);
 
         return () => window.removeEventListener('resize', checkMobile);
-    }, []); const getNavigationItems = () => {
+    }, []);
+
+    // Debug: Log avatar URL when user changes
+    React.useEffect(() => {
+        if (user?.avatarUrl) {
+            console.log('User avatar URL:', user.avatarUrl);
+        }
+    }, [user?.avatarUrl]); const getNavigationItems = () => {
         const items = [
             { path: '/', label: 'Home', icon: '🏠' },
             { path: '/chat', label: 'AI Chat', icon: '💬' },
             { path: '/lessons', label: 'Lessons', icon: '📚' },
             { path: '/vocabulary', label: 'Vocabulary', icon: '📖' },
+            { path: '/my-vocabulary', label: 'My Vocab', icon: '📝' },
             { path: '/documents', label: 'Documents', icon: '📄' },
             { path: '/class', label: 'Classes', icon: '👥' },
-            { path: '/practice', label: 'Practice', icon: '✏️' },
+
             { path: '/progress', label: 'Progress', icon: '📊' },
         ];
 
@@ -90,22 +96,20 @@ const MainLayout: React.FC = () => {
                         </svg>
                     </button>
                 </div>
-            </div>
-
-            {/* Sidebar */}
+            </div>            {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-full bg-white shadow-lg transition-all duration-300 z-50 lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed left-0 top-0 h-full bg-white shadow-lg transition-all duration-300 z-50 lg:translate-x-0 flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                     } lg:block ${isSidebarCollapsed ? 'lg:w-20' : 'lg:w-64'} w-64`}
             >                {/* Logo Section */}
-                <div className="p-4 lg:p-6 border-b border-pink-100 lg:pt-6 pt-20">
+                <div className="p-3 lg:p-4 border-b border-pink-100 lg:pt-4 pt-20 flex-shrink-0">
                     <div className="flex items-center justify-between">
                         {!isSidebarCollapsed && (
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                                    <span className="text-2xl">🎓</span>
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
+                                    <span className="text-base">🎓</span>
                                 </div>
                                 <div className="lg:block hidden">
-                                    <h1 className="text-lg font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
+                                    <h1 className="text-base font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
                                         FPT Learnify AI
                                     </h1>
                                     <p className="text-xs text-gray-500">AI Learning Platform</p>
@@ -114,10 +118,10 @@ const MainLayout: React.FC = () => {
                         )}
                         <button
                             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                            className="p-2 rounded-lg hover:bg-pink-50 transition-colors hidden lg:block"
+                            className="p-1.5 rounded-lg hover:bg-pink-50 transition-colors hidden lg:block"
                         >
                             <svg
-                                className={`w-5 h-5 text-pink-500 transition-transform ${isSidebarCollapsed ? 'rotate-180' : ''
+                                className={`w-4 h-4 text-pink-500 transition-transform ${isSidebarCollapsed ? 'rotate-180' : ''
                                     }`}
                                 fill="none"
                                 stroke="currentColor"
@@ -134,47 +138,89 @@ const MainLayout: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Navigation */}
-                <nav className="p-4 space-y-2">
+                {/* Navigation - with scroll */}
+                <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
                     {navigationItems.map((item) => {
                         const isActive = isActivePath(item.path);
                         return (<Link
                             key={item.path}
                             to={item.path}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
-                                ? 'bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-lg shadow-pink-300/50'
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
+                                ? 'bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-md shadow-pink-300/50'
                                 : 'text-gray-600 hover:bg-gradient-to-r hover:from-orange-100 hover:to-pink-100'
                                 }`}
                         >
-                            <span className="text-2xl">{item.icon}</span>                                {(!isSidebarCollapsed || isMobile) && (
-                                <span className="font-medium">{item.label}</span>
+                            <span className="text-lg flex-shrink-0">{item.icon}</span>                                {(!isSidebarCollapsed || isMobile) && (
+                                <span className="font-medium text-sm">{item.label}</span>
                             )}
                         </Link>
                         );
                     })}
                 </nav>                {/* User Section */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-pink-100">
+                <div className="border-t border-pink-100 p-3 flex-shrink-0">
                     {isAuthenticated ? (
-                        <div className="space-y-3">
-                            {(!isSidebarCollapsed || isMobile) && (
-                                <div className="flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-orange-50 to-pink-50 rounded-xl">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-                                        {user?.name?.charAt(0).toUpperCase()}
+                        <div className="space-y-2">                            {/* Profile Link */}
+                            <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>                                <button className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${isActivePath('/profile')
+                                ? 'bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-md'
+                                : 'text-gray-600 hover:bg-gradient-to-r hover:from-orange-100 hover:to-pink-100'
+                                }`}>
+                                {/* Avatar or Icon */}
+                                {isSidebarCollapsed && !isMobile ? (
+                                    <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0">
+                                        {user?.avatarUrl ? (
+                                            <img
+                                                src={user.avatarUrl}
+                                                alt={user.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    console.error('Avatar failed to load:', user.avatarUrl);
+                                                    e.currentTarget.style.display = 'none';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-xs font-bold">
+                                                {user?.name?.charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <span className="text-lg">👤</span>
+                                )}
+                                {(!isSidebarCollapsed || isMobile) && <span className="font-medium text-sm">Profile</span>}
+                            </button>
+                            </Link>                            {(!isSidebarCollapsed || isMobile) && (
+                                <div className="flex items-center gap-2 px-2 py-2 bg-gradient-to-r from-orange-50 to-pink-50 rounded-lg">
+                                    <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
+                                        {user?.avatarUrl ? (
+                                            <img
+                                                src={user.avatarUrl}
+                                                alt={user.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    console.error('Avatar failed to load:', user.avatarUrl);
+                                                    e.currentTarget.style.display = 'none';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center">
+                                                <span className="text-sm">{user?.name?.charAt(0).toUpperCase()}</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-gray-800 truncate">
+                                        <p className="text-xs font-semibold text-gray-800 truncate">
                                             {user?.name}
                                         </p>
                                         <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                                     </div>
                                 </div>
-                            )}                            {user?.role === 'Admin' && (
+                            )}{user?.role === 'Admin' && (
                                 <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                                    <button className={`w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg ${isSidebarCollapsed && !isMobile ? 'px-3' : ''
+                                    <button className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg text-sm ${isSidebarCollapsed && !isMobile ? 'px-2' : ''
                                         }`}
                                     >
-                                        <span className="text-lg">👑</span>
+                                        <span className="text-base">👑</span>
                                         {(!isSidebarCollapsed || window.innerWidth < 1024) && <span className="font-medium">Admin Panel</span>}
                                     </button>
                                 </Link>
@@ -184,20 +230,20 @@ const MainLayout: React.FC = () => {
                                     logout();
                                     setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-600 text-white rounded-xl hover:from-orange-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg ${isSidebarCollapsed && window.innerWidth >= 1024 ? 'px-3' : ''
+                                className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-pink-600 text-white rounded-lg hover:from-orange-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg text-sm ${isSidebarCollapsed && window.innerWidth >= 1024 ? 'px-2' : ''
                                     }`}
                             >
-                                <span className="text-lg">👋</span>
+                                <span className="text-base">👋</span>
                                 {(!isSidebarCollapsed || window.innerWidth < 1024) && <span className="font-medium">Logout</span>}
                             </button>
                         </div>) : (
                         <div className="space-y-2">
                             <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                                 <button
-                                    className={`w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-600 text-white rounded-xl hover:from-orange-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg ${isSidebarCollapsed && window.innerWidth >= 1024 ? 'px-3' : ''
+                                    className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-pink-600 text-white rounded-lg hover:from-orange-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg text-sm ${isSidebarCollapsed && window.innerWidth >= 1024 ? 'px-2' : ''
                                         }`}
                                 >
-                                    <span className="text-lg">🔐</span>
+                                    <span className="text-base">🔐</span>
                                     {(!isSidebarCollapsed || window.innerWidth < 1024) && <span className="font-medium">Login</span>}
                                 </button>
                             </Link>

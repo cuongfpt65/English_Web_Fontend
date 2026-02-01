@@ -1,28 +1,40 @@
 import { Plus, Send } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Button } from '../../components/Button/Button';
+import VocabularyPopup from '../../components/VocabularyPopup';
 import type { ChatMessage, ChatSession } from '../../services/chatService';
 import chatService from '../../services/chatService';
+import { myVocabService } from '../../services/myVocabService';
 import ChatHistorySidebar from './ChatHistorySidebar';
 
-type ChatBotType = 'smalltalk' | 'error' | 'grammar_fix' | 'answer_suggest' | 'structure_review' | 'essay';
+type ChatBotType = 'smalltalk' | 'error' | 'grammar_fix' | 'answer_suggest' | 'structure_review' | 'essay' | 'essay_with_vocabulary';
+
+interface VocabularyWord {
+    word: string;
+    meaning: string;
+    example?: string;
+}
 
 const ChatPage: React.FC = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputMessage, setInputMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedType, setSelectedType] = useState<ChatBotType>('smalltalk');
+    // Vocabulary popup states
+    const [showVocabPopup, setShowVocabPopup] = useState(false);
+    const [suggestedWords, setSuggestedWords] = useState<VocabularyWord[]>([]);
+
     // Chat history states
     const [sessions, setSessions] = useState<ChatSession[]>([]);
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-
-    const chatBotTypes: Array<{ value: ChatBotType; label: string; emoji: string; description: string }> = [
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); const chatBotTypes: Array<{ value: ChatBotType; label: string; emoji: string; description: string }> = [
         { value: 'smalltalk', label: 'Small Talk', emoji: '💬', description: 'Casual conversation' },
         { value: 'error', label: 'Error Check', emoji: '🔍', description: 'Find errors in text' },
         { value: 'grammar_fix', label: 'Grammar Fix', emoji: '✏️', description: 'Fix grammar mistakes' },
         { value: 'answer_suggest', label: 'Answer Suggest', emoji: '💡', description: 'Get answer suggestions' },
         { value: 'structure_review', label: 'Structure Review', emoji: '📝', description: 'Review text structure' },
         { value: 'essay', label: 'Essay Help', emoji: '📄', description: 'Essay writing assistance' },
+        { value: 'essay_with_vocabulary', label: 'Essay + Vocab', emoji: '📚', description: 'Essay with vocabulary list' },
     ];
 
     // Load sessions on mount
@@ -75,9 +87,63 @@ const ChatPage: React.FC = () => {
         } catch (error) {
             console.error('Failed to rename session:', error);
         }
-    };
+    };    // Extract vocabulary from AI response
+    const extractVocabulary = (text: string): VocabularyWord[] => {
+        const words: VocabularyWord[] = [];
 
-    const sendMessage = async () => {
+        // Pattern 1: **Word** - meaning (common in AI responses)
+        const pattern1 = /\*\*([A-Za-z\s'-]+)\*\*\s*[-:]\s*([^.\n]+)/g;
+        let match;
+
+        while ((match = pattern1.exec(text)) !== null) {
+            const word = match[1].trim();
+            const meaning = match[2].trim();
+            if (word && meaning && word.length < 50) {
+                words.push({ word, meaning });
+            }
+        }
+
+        // Pattern 2: Word: meaning
+        const pattern2 = /^([A-Z][a-z]+(?:\s[a-z]+)?)\s*:\s*(.+?)(?:\n|$)/gm;
+        while ((match = pattern2.exec(text)) !== null) {
+            const word = match[1].trim();
+            const meaning = match[2].trim();
+            if (word && meaning && word.length < 50 && !words.some(w => w.word.toLowerCase() === word.toLowerCase())) {
+                words.push({ word, meaning });
+            }
+        }
+
+        return words;
+    };    // Handle saving vocabulary
+    const handleSaveVocabulary = async (selectedWords: VocabularyWord[]) => {
+        if (selectedWords.length === 0) return;
+
+        try {
+            // Prepare words for batch save to MyVocab
+            const wordsToSave = selectedWords.map(w => ({
+                word: w.word,
+                meaning: w.meaning,
+                example: w.example || '',
+                topic: 'From Chat',
+                level: 'Intermediate',
+                isLearned: false
+            }));
+
+            const result = await myVocabService.createMyVocabularyBatch(wordsToSave);
+
+            setShowVocabPopup(false);
+            setSuggestedWords([]);
+
+            // Show success message
+            const addedMsg = result.addedCount > 0 ? `Đã lưu ${result.addedCount} từ mới vào MyVocab! ✅` : '';
+            const skippedMsg = result.skippedCount > 0 ? `${result.skippedCount} từ đã tồn tại.` : '';
+
+            alert(`${addedMsg} ${skippedMsg}`.trim());
+        } catch (error) {
+            console.error('Error saving vocabulary:', error);
+            alert('❌ Có lỗi khi lưu từ vựng. Vui lòng thử lại!');
+        }
+    }; const sendMessage = async () => {
         if (!inputMessage.trim() || loading) return;
 
         setLoading(true);
@@ -104,6 +170,63 @@ const ChatPage: React.FC = () => {
 
             if (response.sessionId) {
                 await loadSessionMessages(response.sessionId);
+
+                // Kiểm tra nếu có vocabulary data từ backend (essay_with_vocabulary)
+                if (response.vocabularyData && response.vocabularyData.vocabulary) {
+                    const vocabularyWords: VocabularyWord[] = response.vocabularyData.vocabulary.map(v => ({
+                        word: v.word,
+                        meaning: v.meaning,
+                        example: v.example
+                    })); if (vocabularyWords.length > 0) {
+                        // Kiểm tra từ nào đã tồn tại
+                        try {
+                            const existingWords = await myVocabService.checkWordsExist(
+                                vocabularyWords.map(v => v.word)
+                            );
+                            const newWords = vocabularyWords.filter(
+                                v => !existingWords.includes(v.word.toLowerCase())
+                            );
+
+                            if (newWords.length > 0) {
+                                setSuggestedWords(newWords);
+                                // Show popup after a short delay
+                                setTimeout(() => setShowVocabPopup(true), 1500);
+                            } else if (vocabularyWords.length > 0) {
+                                // Tất cả từ đã tồn tại nhưng vẫn hiển thị
+                                setSuggestedWords(vocabularyWords);
+                                setTimeout(() => setShowVocabPopup(true), 1500);
+                            }
+                        } catch (err) {
+                            console.error('Error checking vocabulary:', err);
+                            // Nếu lỗi, vẫn hiển thị popup
+                            setSuggestedWords(vocabularyWords);
+                            setTimeout(() => setShowVocabPopup(true), 1500);
+                        }
+                    }
+                }                // Nếu không có vocabularyData, thử extract từ answer (cho các type khác)
+                else if (response.answer) {
+                    const vocabulary = extractVocabulary(response.answer);
+
+                    if (vocabulary.length > 0) {
+                        // Check which words already exist
+                        try {
+                            const existingWords = await myVocabService.checkWordsExist(
+                                vocabulary.map(v => v.word)
+                            );
+                            const newWords = vocabulary.filter(
+                                v => !existingWords.includes(v.word.toLowerCase())
+                            );
+
+                            if (newWords.length > 0) {
+                                setSuggestedWords(newWords);
+                                // Show popup after a short delay
+                                setTimeout(() => setShowVocabPopup(true), 1500);
+                            }
+                        } catch (err) {
+                            console.error('Error checking vocabulary:', err);
+                        }
+                    }
+                }
             }
         } catch (error) {
             console.error('Failed to send message:', error);
@@ -119,22 +242,72 @@ const ChatPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }; const formatBotMessage = (text: string) => {
+        // Thử parse JSON để kiểm tra xem có phải essay_with_vocabulary không
+        try {
+            const parsed = JSON.parse(text);
+            if (parsed.essay && parsed.vocabularyData) {
+                // Nếu có cấu trúc essay + vocabulary, chỉ hiển thị essay
+                const essayText = parsed.essay;
+                return (
+                    <div className="essay-content">
+                        {essayText
+                            .replace(/\*/g, '')
+                            .split('\n')
+                            .filter((line: string) => line.trim())
+                            .map((line: string, index: number) => {
+                                // Kiểm tra nếu là heading (bắt đầu với 📘, 📝, v.v.)
+                                if (line.match(/^(📘|📝|📚|✔️|💡)/)) {
+                                    return (
+                                        <p key={index} className="font-bold text-orange-600 mb-3 mt-2 first:mt-0">
+                                            {line.trim()}
+                                        </p>
+                                    );
+                                }
+                                return (
+                                    <p key={index} className="mb-2 last:mb-0 leading-relaxed">
+                                        {line.trim()}
+                                    </p>
+                                );
+                            })}
+                    </div>
+                );
+            }
+        } catch (e) {
+            // Không phải JSON, xử lý như text bình thường
+        }
 
-    const formatBotMessage = (text: string) => {
+        // Format text bình thường
         return text
             .replace(/\*/g, '')
             .split('\n')
             .filter((line) => line.trim())
-            .map((line, index) => (
-                <p key={index} className="mb-2 last:mb-0">
-                    {line.trim()}
-                </p>
-            ));
-    };
-
-    return (
+            .map((line, index) => {
+                // Kiểm tra nếu là heading
+                if (line.match(/^(📘|📝|📚|✔️|💡|🔍)/)) {
+                    return (
+                        <p key={index} className="font-bold text-orange-600 mb-3 mt-2 first:mt-0">
+                            {line.trim()}
+                        </p>
+                    );
+                }
+                return (
+                    <p key={index} className="mb-2 last:mb-0 leading-relaxed">
+                        {line.trim()}
+                    </p>
+                );
+            });
+    }; return (
         <div className="flex h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-peach-50">
+            {/* Vocabulary Popup */}
+            {showVocabPopup && (
+                <VocabularyPopup
+                    words={suggestedWords}
+                    onSave={handleSaveVocabulary}
+                    onClose={() => setShowVocabPopup(false)}
+                />
+            )}
+
             {/* Sidebar */}
             <ChatHistorySidebar
                 sessions={sessions}
@@ -142,6 +315,8 @@ const ChatPage: React.FC = () => {
                 onSelectSession={handleSelectSession}
                 onNewChat={createNewConversation}
                 onRenameSession={handleRenameSession}
+                isCollapsed={isSidebarCollapsed}
+                onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             />
 
             {/* Main Chat Area */}

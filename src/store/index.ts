@@ -8,6 +8,7 @@ interface User {
     phoneNumber?: string;
     name: string;
     fullName?: string;
+    avatarUrl?: string;
     role?: string;
     status?: string;
 }
@@ -20,9 +21,8 @@ interface AuthState {
     login: (emailOrPhone: string, password: string) => Promise<void>;
     loginWithPhone: (phoneNumber: string, code: string, createAccount?: boolean, name?: string, email?: string) => Promise<void>;
     sendVerificationCode: (phoneNumber: string, type?: string) => Promise<string>;
-    sendEmailVerification: (email: string, password: string, confirmPassword: string, name: string, role: string, phoneNumber?: string) => Promise<void>;
-    verifyEmailAndRegister: (email: string, code: string) => Promise<void>;
     register: (email: string, password: string, confirmPassword: string, name: string, role: string, phoneNumber?: string) => Promise<void>;
+    updateUser: (user: Partial<User>) => void;
     logout: () => void;
     setLoading: (loading: boolean) => void;
 }
@@ -117,45 +117,6 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            sendEmailVerification: async (email: string, password: string, confirmPassword: string, name: string, role: string, phoneNumber?: string) => {
-                set({ isLoading: true });
-                try {
-                    await authService.sendEmailVerification({ email, password, confirmPassword, name, role, phoneNumber });
-                    set({ isLoading: false });
-                } catch (error: any) {
-                    set({ isLoading: false });
-                    throw new Error(error.response?.data?.message || error.message || 'Không thể gửi mã xác thực');
-                }
-            },
-
-            verifyEmailAndRegister: async (email: string, code: string) => {
-                set({ isLoading: true });
-                try {
-                    const data = await authService.verifyEmailAndRegister({ email, code });
-
-                    // If user is teacher and status is pending, show message instead of logging in
-                    if (data.user.role === 'Teacher' && data.user.status === 'Pending') {
-                        set({ isLoading: false });
-                        throw new Error('Đăng ký thành công! Tài khoản giáo viên của bạn đang chờ phê duyệt từ quản trị viên.');
-                    }
-
-                    set({
-                        user: data.user,
-                        token: data.token,
-                        isAuthenticated: true,
-                        isLoading: false,
-                    });
-
-                    // Chuyển hướng đến trang chủ sau khi xác thực thành công
-                    if (navigateFunction) {
-                        navigateFunction('/');
-                    }
-                } catch (error: any) {
-                    set({ isLoading: false });
-                    throw new Error(error.response?.data?.message || error.message || 'Xác thực thất bại');
-                }
-            },
-
             logout: () => {
                 set({
                     user: null,
@@ -168,6 +129,12 @@ export const useAuthStore = create<AuthState>()(
                 if (navigateFunction) {
                     navigateFunction('/auth');
                 }
+            },
+
+            updateUser: (updatedUser: Partial<User>) => {
+                set((state) => ({
+                    user: state.user ? { ...state.user, ...updatedUser } : null,
+                }));
             },
 
             setLoading: (loading: boolean) => {

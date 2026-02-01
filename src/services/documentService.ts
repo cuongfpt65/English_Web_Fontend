@@ -54,6 +54,15 @@ export interface UpdateDocumentDto {
     categoryId: string;
 }
 
+interface GetDocumentsParams {
+    categoryId?: string;
+    search?: string;
+    fileType?: string;
+    page?: number;
+    pageSize?: number;
+    uploaderId?: string; // Add uploaderId parameter
+}
+
 const documentService = {
     // Categories
     getAllCategories: async () => {
@@ -79,16 +88,17 @@ const documentService = {
     deleteCategory: async (id: string) => {
         const response = await api.delete<{ success: boolean; message: string }>(`/document/categories/${id}`);
         return response.data;
-    },
+    },    // Documents
+    getDocuments: async (params: GetDocumentsParams = {}) => {
+        const queryParams = new URLSearchParams();
 
-    // Documents
-    getDocuments: async (params?: {
-        categoryId?: string;
-        search?: string;
-        fileType?: string;
-        page?: number;
-        pageSize?: number;
-    }) => {
+        if (params.categoryId) queryParams.append('categoryId', params.categoryId);
+        if (params.search) queryParams.append('search', params.search);
+        if (params.fileType) queryParams.append('fileType', params.fileType);
+        if (params.page) queryParams.append('page', params.page.toString());
+        if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+        if (params.uploaderId) queryParams.append('uploaderId', params.uploaderId); // Add to query
+
         const response = await api.get<{ success: boolean; data: DocumentsResponse }>('/document', { params });
         return response.data.data;
     },

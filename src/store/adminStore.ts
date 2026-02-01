@@ -37,11 +37,10 @@ interface AdminState {
     rejectTeacher: (userId: string, reason: string) => Promise<void>;
 
     // Statistics
-    fetchDashboardStats: () => Promise<void>;
-
-    // User Management
+    fetchDashboardStats: () => Promise<void>;    // User Management
     fetchAllUsers: () => Promise<void>;
-    changeUserRole: (userId: string, role: string) => Promise<void>;
+    resetUserPassword: (userId: string, newPassword: string) => Promise<void>;
+    toggleUserStatus: (userId: string, isActive: boolean) => Promise<void>;
 
     setError: (error: string | null) => void;
 }
@@ -109,9 +108,7 @@ export const useAdminStore = create<AdminState>((set) => ({
                 isLoading: false
             });
         }
-    },
-
-    fetchAllUsers: async () => {
+    }, fetchAllUsers: async () => {
         set({ isLoading: true, error: null });
         try {
             const data = await adminService.getAllUsers();
@@ -124,16 +121,32 @@ export const useAdminStore = create<AdminState>((set) => ({
         }
     },
 
-    changeUserRole: async (userId: string, role: string) => {
+    resetUserPassword: async (userId: string, newPassword: string) => {
         set({ isLoading: true, error: null });
         try {
-            await adminService.changeUserRole(userId, role);
+            await adminService.resetUserPassword(userId, newPassword);
             // Refresh users list
             const data = await adminService.getAllUsers();
             set({ users: data, isLoading: false });
         } catch (error: any) {
             set({
-                error: error.response?.data?.message || 'Failed to change user role',
+                error: error.response?.data?.message || 'Failed to reset user password',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
+
+    toggleUserStatus: async (userId: string, isActive: boolean) => {
+        set({ isLoading: true, error: null });
+        try {
+            await adminService.toggleUserStatus(userId, isActive);
+            // Refresh users list
+            const data = await adminService.getAllUsers();
+            set({ users: data, isLoading: false });
+        } catch (error: any) {
+            set({
+                error: error.response?.data?.message || 'Failed to toggle user status',
                 isLoading: false
             });
             throw error;

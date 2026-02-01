@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FiDownload, FiEye, FiFile, FiPlus, FiTrash2, FiUpload, FiX } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import DocumentViewer from '../components/DocumentViewer';
 import documentService, { type Document, type DocumentCategory, type UploadDocumentDto } from '../services/documentService';
 import { useAuthStore } from '../store';
 
@@ -19,6 +20,8 @@ export default function TeacherDocuments() {
     const [totalPages, setTotalPages] = useState(1);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [viewerOpen, setViewerOpen] = useState(false);
+    const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
     // Form states
     const [uploadForm, setUploadForm] = useState({
@@ -61,6 +64,7 @@ export default function TeacherDocuments() {
                 search: searchTerm || undefined,
                 page: currentPage,
                 pageSize: 10,
+                uploaderId: user?.id, // Filter by current teacher
             });
             setDocuments(response.items);
             setTotalPages(response.totalPages);
@@ -69,15 +73,14 @@ export default function TeacherDocuments() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    }; const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            // Chỉ cho phép file DOC và DOCX
+            const allowedTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
             if (!allowedTypes.includes(file.type)) {
-                setError('Chỉ chấp nhận file PDF, DOC, DOCX');
+                setError('Chỉ chấp nhận file DOC hoặc DOCX');
                 return;
             }
 
@@ -142,9 +145,7 @@ export default function TeacherDocuments() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleDeleteDocument = async (id: string) => {
+    }; const handleDeleteDocument = async (id: string) => {
         if (!window.confirm('Bạn có chắc muốn xóa tài liệu này?')) return;
 
         try {
@@ -154,6 +155,19 @@ export default function TeacherDocuments() {
             setTimeout(() => setSuccess(''), 3000);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Không thể xóa tài liệu');
+        }
+    }; const handleViewDocument = async (doc: Document) => {
+        try {
+            await documentService.recordView(doc.id);
+
+            // Open in modal viewer
+            setSelectedDocument(doc);
+            setViewerOpen(true);
+
+            // Refresh to update view count
+            loadDocuments();
+        } catch (err: any) {
+            console.error('Error recording view:', err);
         }
     };
 
@@ -264,18 +278,15 @@ export default function TeacherDocuments() {
                                                     <p className="text-xs text-gray-400 mt-2">
                                                         Danh mục: {doc.categoryName} • {new Date(doc.createdAt).toLocaleDateString('vi-VN')}
                                                     </p>
-                                                </div>
-                                            </div>
+                                                </div>                                            </div>
                                             <div className="flex gap-2">
-                                                <a
-                                                    href={doc.fileUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                                <button
+                                                    onClick={() => handleViewDocument(doc)}
                                                     className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                                     title="Xem tài liệu"
                                                 >
                                                     <FiEye className="text-xl" />
-                                                </a>
+                                                </button>
                                                 <button
                                                     onClick={() => handleDeleteDocument(doc.id)}
                                                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -361,14 +372,12 @@ export default function TeacherDocuments() {
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                                     ))}
                                 </select>
-                            </div>
-
-                            <div>
+                            </div>                            <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">File *</label>
                                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                                     <input
                                         type="file"
-                                        accept=".pdf,.doc,.docx"
+                                        accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                         onChange={handleFileSelect}
                                         className="hidden"
                                         id="file-upload"
@@ -383,7 +392,7 @@ export default function TeacherDocuments() {
                                         ) : (
                                             <div>
                                                 <p className="text-gray-600">Nhấn để chọn file</p>
-                                                <p className="text-sm text-gray-500">PDF, DOC, DOCX (tối đa 50MB)</p>
+                                                <p className="text-sm text-gray-500">Chỉ chấp nhận file DOC, DOCX (tối đa 50MB)</p>
                                             </div>
                                         )}
                                     </label>
@@ -461,13 +470,24 @@ export default function TeacherDocuments() {
                                     type="submit"
                                     disabled={loading}
                                     className="flex-1 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition disabled:opacity-50"
-                                >
-                                    {loading ? 'Đang tạo...' : 'Tạo'}
+                                >                                {loading ? 'Đang tạo...' : 'Tạo'}
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
+            )}
+
+            {/* Document Viewer Modal */}
+            {selectedDocument && (
+                <DocumentViewer
+                    isOpen={viewerOpen}
+                    onClose={() => {
+                        setViewerOpen(false);
+                        setSelectedDocument(null);
+                    }}
+                    document={selectedDocument}
+                />
             )}
         </div>
     );
